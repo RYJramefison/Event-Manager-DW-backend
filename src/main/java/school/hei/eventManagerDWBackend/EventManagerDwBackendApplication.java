@@ -5,7 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication
-@ComponentScan({"school.hei.eventManagerDWBackend.entity", "school.hei.eventManagerDWBackend.repository.dao"})
+@ComponentScan({"school.hei.eventManagerDWBackend.controller","school.hei.eventManagerDWBackend.entity", "school.hei.eventManagerDWBackend.repository.dao"})
 public class EventManagerDwBackendApplication {
 
 	public static void main(String[] args) {
