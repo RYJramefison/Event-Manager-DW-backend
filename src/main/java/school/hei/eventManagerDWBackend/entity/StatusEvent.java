@@ -1,5 +1,7 @@
 package school.hei.eventManagerDWBackend.entity;
 
-public enum EventStatus {
-    
+public enum StatusEvent {
+    BROUILLON,
+    PUBLIE,
+    ANNULE
 }
