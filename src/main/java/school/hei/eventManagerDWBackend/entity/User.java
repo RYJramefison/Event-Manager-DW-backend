@@ -1,11 +1,9 @@
 package school.hei.eventManagerDWBackend.entity;
 
-import lombok.*;
-
 import java.time.LocalDateTime;
 import java.util.Objects;
 
-public class User {
+public abstract class User {
     private int id;
     private String name;
     private String email;
