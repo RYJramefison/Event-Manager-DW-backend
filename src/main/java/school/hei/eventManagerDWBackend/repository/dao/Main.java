@@ -11,5 +11,8 @@ public class Main {
 
     AdminDao adminDao = new AdminDao();
     System.out.println("admin : " + adminDao.getById(2));
+
+    OrganizerDao organizerDao = new OrganizerDao();
+    System.out.println("organizer : " + organizerDao.getById(2));
   }
 }
