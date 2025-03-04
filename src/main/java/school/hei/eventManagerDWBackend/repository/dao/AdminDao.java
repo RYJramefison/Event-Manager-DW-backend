@@ -58,9 +58,10 @@ public class AdminDao implements CrudOperation<Admin> {
     @Override
     public List<Admin> getAll(int page, int size) {
         List<Admin> admins = new ArrayList<>();
-        String sql = "SELECT a.id AS admin_id, u.name, u.email, u.password, u.registration_date, a.admin_name " +
-                     "FROM admin a JOIN user u ON a.user_id = u.id " +
-                     "LIMIT ? OFFSET ?";
+    String sql =
+        "SELECT a.id AS admin_id, u.name, u.email, u.password, u.registration_date, a.admin_name\n"
+            + "                     FROM admin a JOIN \"User\" u ON a.user_id = u.id\n"
+            + "                     LIMIT ? OFFSET ?;";
 
         try (Connection conn = dataSource.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -88,16 +89,16 @@ public class AdminDao implements CrudOperation<Admin> {
 
     @Override
     public Optional<Admin> getById(int id) {
-        String sql =
-                "SELECT a.id AS admin_id, " +
-                "       u.name, " +
-                "       u.email, " +
-                "       u.password, " +
-                "       u.registration_date, " +
-                "       a.admin_name " +
-                "FROM admin a " +
-                "JOIN user u ON a.user_id = u.id " +
-                "WHERE a.id = ?;";
+    String sql =
+        "SELECT a.id AS admin_id,\n"
+            + "                       u.name,\n"
+            + "                       u.email,\n"
+            + "                       u.password,\n"
+            + "                       u.registration_date,\n"
+            + "                       a.admin_name\n"
+            + "                FROM admin a\n"
+            + "                JOIN \"User\" u ON a.user_id = u.id\n"
+            + "                WHERE a.id = ?;";
 
         try (Connection conn = dataSource.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {

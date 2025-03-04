@@ -1,7 +1,10 @@
 package school.hei.eventManagerDWBackend.entity;
 
+import lombok.ToString;
+
 import java.time.LocalDateTime;
 
+@ToString
 public class Organizer extends User {
   private String company;
 
@@ -22,28 +25,5 @@ public class Organizer extends User {
 
   public void setCompany(String company) {
     this.company = company;
-  }
-
-  @Override
-  public String toString() {
-    return "Organizer{"
-        + "company='"
-        + company
-        + '\''
-        + ", id="
-        + getId()
-        + // Assuming getId() is a method in User
-        ", name='"
-        + getName()
-        + '\''
-        + // Assuming getName() is a method in User
-        ", email='"
-        + getEmail()
-        + '\''
-        + // Assuming getEmail() is a method in User
-        ", registrationDate="
-        + getRegistrationDate()
-        + // Assuming getRegistrationDate() is a method in User
-        '}';
   }
 }
