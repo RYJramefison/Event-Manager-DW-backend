@@ -16,6 +16,7 @@ public class DataSource {
     jdbcUrl = "jdbc:postgresql://" + host + ":" + port + "/" + database;
   }
 
+
   public Connection getConnection() {
     try {
       return DriverManager.getConnection(jdbcUrl, user, password);
