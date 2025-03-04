@@ -4,4 +4,5 @@ public enum StatusEvent {
     BROUILLON,
     PUBLIE,
     ANNULE
+
 }
