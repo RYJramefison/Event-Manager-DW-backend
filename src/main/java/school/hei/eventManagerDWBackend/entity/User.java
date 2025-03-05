@@ -10,6 +10,7 @@ public abstract class User {
     private String password;
     private LocalDateTime registrationDate;
 
+
     public User(int id, String name, String email, String password, LocalDateTime registrationDate) {
         this.id = id;
         this.name = name;
@@ -18,12 +19,15 @@ public abstract class User {
         this.registrationDate = registrationDate;
     }
 
+    public void setId(Long id) {
+        this.id = id;
     public User() {
 
     }
 
     public int getId() {
         return id;
+
     }
 
     public String getName() {
@@ -60,7 +64,8 @@ public abstract class User {
 
     @Override
     public String toString() {
-        return "User{" +
+        return "User{
+
                "id=" + id +
                ", name='" + name + '\'' +
                ", email='" + email + '\'' +
@@ -79,5 +84,6 @@ public abstract class User {
     @Override
     public int hashCode() {
         return Objects.hash(id, name, email, password, registrationDate);
+      
     }
 }

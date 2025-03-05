@@ -3,18 +3,22 @@ package school.hei.eventManagerDWBackend.entity;
 import lombok.Getter;
 import lombok.Setter;
 
+public class Event {
+    private int id;
+    private Organizer organizer;
+    private String title;
+    private String description;
+    private Timestamp dateEvent;
+    private String location;
+    private StatusEvent status;
+
+
+}
 import java.time.LocalDateTime;
 @Getter
 @Setter
 
 public class Event {
-  private int id;
-  private Organizer organizer;
-  private String title;
-  private String description;
-  private LocalDateTime dateEvent;
-  private String location;
-  private StatusEvent status;
 
   public Event(
       int id,
@@ -23,7 +27,8 @@ public class Event {
       String description,
       LocalDateTime dateEvent,
       String location,
-      StatusEvent status) {
+      StatusEvent status) 
+  {
     this.id = id;
     this.organizer = organizer;
     this.title = title;
@@ -38,12 +43,12 @@ public class Event {
     this.location = location;
   }
 
-  public Event() {
-  }
+ 
 
   @Override
   public String toString() {
-    return "Event{"
+    return 
+      "Event{"
         + "id="
         + id
         + ", organizer="
@@ -64,3 +69,4 @@ public class Event {
         + '}';
   }
 }
+
