@@ -1,10 +1,13 @@
 package school.hei.eventManagerDWBackend.entity;
 
+import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 
 import java.time.LocalDateTime;
-
-@ToString
+@Getter
+@Setter
+@ToString(callSuper = true)
 public class Admin extends User {
   private String adminName;
 
@@ -26,12 +29,4 @@ public class Admin extends User {
   public void setAdminName(String adminName) {
     this.adminName = adminName;
   }
-
-  //  @Override
-  //  public String toString() {
-  //    return "Admin{" +
-  //           "adminName='" + adminName + '\'' +
-  //           ", " + super.toString() +
-  //           '}';
-  //  }
 }

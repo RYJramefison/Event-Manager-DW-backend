@@ -1,10 +1,13 @@
 package school.hei.eventManagerDWBackend.entity;
 
+import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 
 import java.time.LocalDateTime;
-
-@ToString
+@Getter
+@Setter
+@ToString(callSuper = true)
 public class Organizer extends User {
   private String company;
 
@@ -17,10 +20,6 @@ public class Organizer extends User {
       String company) {
     super(id, name, email, password, registrationDate);
     this.company = company;
-  }
-
-  public Organizer( String company) {
-    super();
   }
 
   public String getCompany() {

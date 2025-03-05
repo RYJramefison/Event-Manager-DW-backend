@@ -1,30 +1,34 @@
 package school.hei.eventManagerDWBackend.repository.dao;
 
-import school.hei.eventManagerDWBackend.entity.Organizer;
+import school.hei.eventManagerDWBackend.entity.Client;
 import school.hei.eventManagerDWBackend.repository.db.DataSource;
 
 import java.sql.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class OrganizerDao implements CrudOperation<Organizer> {
+public class ClientDao implements CrudOperation<Client> {
 
   private final DataSource dataSource = new DataSource();
 
   @Override
-  public void create(Organizer organizer) {
-    String sql = "INSERT INTO organizer (user_id, company) VALUES (?, ?)";
+  public void create(Client client) {
+    String sql =
+        "INSERT INTO client (name, email, password, registration_date) VALUES (?, ?, ?, ?)";
     try (Connection connection = dataSource.getConnection();
         PreparedStatement stmt =
             connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-      stmt.setInt(1, organizer.getId());
-      stmt.setString(2, organizer.getCompany());
+      stmt.setString(1, client.getName());
+      stmt.setString(2, client.getEmail());
+      stmt.setString(3, client.getPassword());
+      stmt.setTimestamp(4, Timestamp.valueOf(client.getRegistrationDate()));
       stmt.executeUpdate();
 
       ResultSet rs = stmt.getGeneratedKeys();
       if (rs.next()) {
-        organizer.setId(rs.getInt(1));
+        client.setId(rs.getInt(1));
       }
     } catch (SQLException e) {
       throw new RuntimeException(e);
@@ -32,37 +36,41 @@ public class OrganizerDao implements CrudOperation<Organizer> {
   }
 
   @Override
-  public void update(Organizer organizer) {
-    String sql = "UPDATE organizer SET company = ? WHERE id = ?";
-    try (Connection connection = dataSource.getConnection();
-        PreparedStatement stmt = connection.prepareStatement(sql)) {
-      stmt.setString(1, organizer.getCompany());
-      stmt.setInt(2, organizer.getId());
-      stmt.executeUpdate();
-    } catch (SQLException e) {
-      throw new RuntimeException(e);
-    }
-  }
-
-  @Override
-  public void delete(Organizer organizer) {
-    String sql = "DELETE FROM organizer WHERE id = ?";
-    try (Connection connection = dataSource.getConnection();
-        PreparedStatement stmt = connection.prepareStatement(sql)) {
-      stmt.setInt(1, organizer.getId());
-      stmt.executeUpdate();
-    } catch (SQLException e) {
-      throw new RuntimeException(e);
-    }
-  }
-
-  @Override
-  public List<Organizer> getAll(int page, int size) {
-    List<Organizer> organizers = new ArrayList<>();
+  public void update(Client client) {
     String sql =
-        "SELECT o.id AS event_id, u.name, u.email, u.password, u.registration_date, o.company "
-            + "FROM organizer o "
-            + "JOIN \"User\" u ON o.user_id = u.id "
+        "UPDATE client SET name = ?, email = ?, password = ?, registration_date = ? WHERE id = ?";
+    try (Connection connection = dataSource.getConnection();
+        PreparedStatement stmt = connection.prepareStatement(sql)) {
+      stmt.setString(1, client.getName());
+      stmt.setString(2, client.getEmail());
+      stmt.setString(3, client.getPassword());
+      stmt.setTimestamp(4, Timestamp.valueOf(client.getRegistrationDate()));
+      stmt.setInt(5, client.getId());
+      stmt.executeUpdate();
+    } catch (SQLException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  @Override
+  public void delete(Client client) {
+    String sql = "DELETE FROM client WHERE id = ?";
+    try (Connection connection = dataSource.getConnection();
+        PreparedStatement stmt = connection.prepareStatement(sql)) {
+      stmt.setInt(1, client.getId());
+      stmt.executeUpdate();
+    } catch (SQLException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  @Override
+  public List<Client> getAll(int page, int size) {
+    List<Client> clients = new ArrayList<>();
+    String sql =
+        "SELECT c.id AS client_id, u.id, u.name, u.email, u.password, u.registration_date\n"
+            + "FROM client c\n"
+            + "         INNER JOIN public.\"User\" u on c.user_id = u.id\n"
             + "LIMIT ? OFFSET ?";
     try (Connection connection = dataSource.getConnection();
         PreparedStatement stmt = connection.prepareStatement(sql)) {
@@ -70,41 +78,39 @@ public class OrganizerDao implements CrudOperation<Organizer> {
       stmt.setInt(2, page * size);
       ResultSet rs = stmt.executeQuery();
       while (rs.next()) {
-        organizers.add(
-            new Organizer(
-                rs.getInt("event_id"),
+        clients.add(
+            new Client(
+                rs.getInt("id"),
                 rs.getString("name"),
                 rs.getString("email"),
                 rs.getString("password"),
-                rs.getTimestamp("registration_date").toLocalDateTime(),
-                rs.getString("company")));
+                rs.getTimestamp("registration_date").toLocalDateTime()));
       }
     } catch (SQLException e) {
       throw new RuntimeException(e);
     }
-    return organizers;
+    return clients;
   }
 
   @Override
-  public Optional<Organizer> getById(int id) {
+  public Optional<Client> getById(int id) {
     String sql =
-        "SELECT o.id AS event_id, u.name, u.email, u.password, u.registration_date, o.company "
-            + "FROM organizer o "
-            + "JOIN \"User\" u ON o.user_id = u.id "
-            + "WHERE o.id = ?";
+        "SELECT c.id AS client_id, u.id, u.name, u.email, u.password, u.registration_date\n"
+            + "FROM client c\n"
+            + "         INNER JOIN public.\"User\" u on c.user_id = u.id\n"
+            + " WHERE id = ?";
     try (Connection connection = dataSource.getConnection();
         PreparedStatement stmt = connection.prepareStatement(sql)) {
       stmt.setInt(1, id);
       ResultSet rs = stmt.executeQuery();
       if (rs.next()) {
         return Optional.of(
-            new Organizer(
-                rs.getInt("event_id"),
+            new Client(
+                rs.getInt("id"),
                 rs.getString("name"),
                 rs.getString("email"),
                 rs.getString("password"),
-                rs.getTimestamp("registration_date").toLocalDateTime(),
-                rs.getString("company")));
+                rs.getTimestamp("registration_date").toLocalDateTime()));
       }
     } catch (SQLException e) {
       throw new RuntimeException(e);
