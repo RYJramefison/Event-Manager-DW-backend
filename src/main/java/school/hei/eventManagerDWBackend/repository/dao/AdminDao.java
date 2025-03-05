@@ -23,8 +23,7 @@ public class AdminDao implements CrudOperation<Admin> {
             ps.setInt(2, entity.getId());
             ps.executeUpdate();
         } catch (SQLException e) {
-            System.err.println("Error creating admin: " + e.getMessage());
-            throw new RuntimeException(e);
+            throw new RuntimeException("Not implemented", e);
         }
     }
 
@@ -37,8 +36,7 @@ public class AdminDao implements CrudOperation<Admin> {
             ps.setInt(2, entity.getId());
             ps.executeUpdate();
         } catch (SQLException e) {
-            System.err.println("Error updating admin: " + e.getMessage());
-            throw new RuntimeException(e);
+            throw new RuntimeException("Not implemented", e);
         }
     }
 
@@ -50,8 +48,7 @@ public class AdminDao implements CrudOperation<Admin> {
             ps.setInt(1, entity.getId());
             ps.executeUpdate();
         } catch (SQLException e) {
-            System.err.println("Error deleting admin: " + e.getMessage());
-            throw new RuntimeException(e);
+            throw new RuntimeException("Not implemented", e);
         }
     }
 
@@ -81,14 +78,13 @@ public class AdminDao implements CrudOperation<Admin> {
                 admins.add(admin);
             }
         } catch (SQLException e) {
-            System.err.println("Error retrieving all admins: " + e.getMessage());
-            throw new RuntimeException(e);
+            throw new RuntimeException("Not implemented", e);
         }
         return admins;
     }
 
     @Override
-    public Optional<Admin> getById(int id) {
+    public Admin getById(int id) {
     String sql =
         "SELECT a.id AS admin_id,\n"
             + "                       u.name,\n"
@@ -114,12 +110,11 @@ public class AdminDao implements CrudOperation<Admin> {
                         rs.getTimestamp("registration_date").toLocalDateTime(),
                         rs.getString("admin_name")
                 );
-                return Optional.of(admin);
+                return admin;
             }
         } catch (SQLException e) {
-            System.err.println("Error retrieving admin by ID: " + e.getMessage());
-            throw new RuntimeException(e);
+            throw new RuntimeException("Not implemented", e);
         }
-        return Optional.empty();
+        return null;
     }
 }

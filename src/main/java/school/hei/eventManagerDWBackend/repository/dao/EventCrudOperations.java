@@ -20,8 +20,9 @@ public class EventCrudOperations implements CrudOperation<Event>{
     }
 
     @Override
-    public Optional<Event> getById(int id) {
-        return Optional.empty();
+    public Event getById(int id) {
+
+        return null;
     }
 
 
