@@ -8,6 +8,7 @@ import school.hei.eventManagerDWBackend.repository.dao.AdminDao;
 import school.hei.eventManagerDWBackend.repository.db.DataSource;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @SpringBootTest
 class EventManagerDwBackendApplicationTests {
@@ -18,9 +19,10 @@ class EventManagerDwBackendApplicationTests {
 		Admin alice = new Admin(1,"Alice Johnson","alice.johnson@example.com"
 				,"password123", LocalDateTime.of(2025,3,5,7,25,37, 169836000), "Alice Admin");
 
-		Admin actual = subjectAdmin.getById(1);
+		//Admin actual = subjectAdmin.getById(1);
+		List<Admin> actual = subjectAdmin.getAll(1,2);
 
-		Assertions.assertEquals(alice, actual);
+		Assertions.assertTrue(actual.contains(alice));
 	}
 
 }
