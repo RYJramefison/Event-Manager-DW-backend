@@ -1,5 +1,7 @@
 package school.hei.eventManagerDWBackend.repository.dao;
 
+import school.hei.eventManagerDWBackend.entity.Event;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -12,5 +14,5 @@ public interface CrudOperation<T> {
 
   List<T> getAll(int page, int size);
 
-  T getById(int id);
+  Optional<T> getById(int id);
 }
