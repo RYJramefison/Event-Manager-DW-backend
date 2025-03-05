@@ -47,11 +47,11 @@ INSERT INTO Client (user_id) VALUES
 -- ===========================
 
 INSERT INTO Event (organizer_id, title, description, event_date, location, status) VALUES
-(1, 'Summer Music Festival', 'An outdoor music festival featuring various artists.', '2025-06-15 18:00:00', 'Central Park', 'published'),
-(2, 'Tech Conference 2025', 'A conference for tech enthusiasts and professionals.', '2025-08-20 09:00:00', 'Convention Center', 'published'),
-(3, 'Art Gallery Opening', 'Opening night for a new art gallery.', '2025-05-10 19:00:00', 'Downtown Art District', 'published'),
-(4, 'Food Truck Rally', 'A gathering of the best food trucks in the city.', '2025-07-25 11:00:00', 'City Square', 'draft'),
-(5, 'Charity Run', 'A charity run to raise funds for local organizations.', '2025-09-15 07:00:00', 'City Park', 'draft');
+(1, 'Summer Music Festival', 'An outdoor music festival featuring various artists.', '2025-06-15 18:00:00', 'Central Park', 'PUBLISHED'),
+(2, 'Tech Conference 2025', 'A conference for tech enthusiasts and professionals.', '2025-08-20 09:00:00', 'Convention Center', 'PUBLISHED'),
+(3, 'Art Gallery Opening', 'Opening night for a new art gallery.', '2025-05-10 19:00:00', 'Downtown Art District', 'PUBLISHED'),
+(4, 'Food Truck Rally', 'A gathering of the best food trucks in the city.', '2025-07-25 11:00:00', 'City Square', 'DRAFT'),
+(5, 'Charity Run', 'A charity run to raise funds for local organizations.', '2025-09-15 07:00:00', 'City Park', 'DRAFT');
 
 -- ===========================
 -- 6. Insert Statements for the "TicketType" Table
@@ -69,11 +69,11 @@ INSERT INTO TicketType (event_id, name, price, available_quantity) VALUES
 -- ===========================
 
 INSERT INTO Reservation (client_id, event_id, reservation_date, status) VALUES
-(1, 1, NOW(), 'confirmed'),
-(2, 2, NOW(), 'confirmed'),
-(3, 3, NOW(), 'canceled'),
-(4, 4, NOW(), 'confirmed'),
-(5, 5, NOW(), 'confirmed');
+(1, 1, NOW(), 'CONFIRMED'),
+(2, 2, NOW(), 'CONFIRMED'),
+(3, 3, NOW(), 'CANCELED'),
+(4, 4, NOW(), 'CONFIRMED'),
+(5, 5, NOW(), 'CONFIRMED');
 
 -- ===========================
 -- 8. Insert Statements for the "Ticket" Table
@@ -91,8 +91,8 @@ INSERT INTO Ticket (reservation_id, ticket_type_id, ticket_code) VALUES
 -- ===========================
 
 INSERT INTO Payment (reservation_id, amount, method, status) VALUES
-(1, 150.00, 'card', 'paid'),
-(2, 100.00, 'paypal', 'pending'),
-(3, 20.00, 'mobile_money', 'failed'),
-(4, 75.00, 'card', 'paid'),
-(5, 150.00, 'paypal', 'pending');
+(1, 150.00, 'CARD', 'PAID'),
+(2, 100.00, 'paypal', 'PENDING'),
+(3, 20.00, 'MOBILE_MONEY', 'FAILED'),
+(4, 75.00, 'CARD', 'PAID'),
+(5, 150.00, 'PAYPAL', 'PENDING');

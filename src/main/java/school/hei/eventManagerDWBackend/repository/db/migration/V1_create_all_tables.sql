@@ -47,7 +47,7 @@ CREATE TABLE if not exists Event
     description  TEXT,
     event_date   TIMESTAMP    NOT NULL,
     location     VARCHAR(255) NOT NULL,
-    status       VARCHAR(50) CHECK (status IN ('draft', 'published', 'canceled')) DEFAULT 'draft'
+    status       VARCHAR(50) CHECK (status IN ('DRAFT', 'PUBLISHED', 'CANCELED')) DEFAULT 'DRAFT'
 );
 
 
@@ -75,7 +75,7 @@ CREATE TABLE if not exists Reservation
     client_id        INT NOT NULL REFERENCES Client (id) ON DELETE CASCADE,
     event_id         INT NOT NULL REFERENCES Event (id) ON DELETE CASCADE,
     reservation_date TIMESTAMP                                               DEFAULT NOW(),
-    status           VARCHAR(50) CHECK (status IN ('confirmed', 'canceled')) DEFAULT 'confirmed'
+    status           VARCHAR(50) CHECK (status IN ('CONFIRMED', 'CANCELED')) DEFAULT 'CONFIRMED'
 );
 
 -- Ticket purchased by a client
@@ -96,7 +96,7 @@ CREATE TABLE if not exists Payment
     id             SERIAL PRIMARY KEY,
     reservation_id INT            NOT NULL REFERENCES Reservation (id) ON DELETE CASCADE,
     amount         DECIMAL(10, 2) NOT NULL,
-    method         VARCHAR(50) CHECK (method IN ('card', 'paypal', 'mobile_money')),
-    status         VARCHAR(50) CHECK (status IN ('pending', 'paid', 'failed')) DEFAULT 'pending',
+    method         VARCHAR(50) CHECK (method IN ('CARD', 'PAYPAL', 'MOBILE_MONEY')),
+    status         VARCHAR(50) CHECK (status IN ('PENDING', 'PAID', 'FAILED')) DEFAULT 'PENDING',
     payment_date   TIMESTAMP                                                   DEFAULT NOW()
 );
