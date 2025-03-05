@@ -31,7 +31,7 @@ public class OrganizerDao implements CrudOperation<Organizer> {
   }
 
   @Override
-  public Optional<Organizer> getById(int id) {
+  public Organizer getById(int id) {
     String sql =
         "SELECT o.id AS event_id,\n"
             + "       u.name,\n"
@@ -47,19 +47,19 @@ public class OrganizerDao implements CrudOperation<Organizer> {
       pr.setInt(1, id);
       ResultSet rs = pr.executeQuery();
       if (rs.next()) {
-        return Optional.of(
+        return
             new Organizer(
                 rs.getInt("event_id"),
                 rs.getString("name"),
                 rs.getString("email"),
                 rs.getString("password"),
                 rs.getTimestamp("registration_date").toLocalDateTime(),
-                rs.getString("company")));
+                rs.getString("company"));
       }
 
     } catch (SQLException e) {
       throw new RuntimeException(e);
     }
-    return Optional.empty();
+      return null;
   }
 }
