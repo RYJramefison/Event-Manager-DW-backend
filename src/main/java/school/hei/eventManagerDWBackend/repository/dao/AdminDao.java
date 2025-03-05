@@ -85,36 +85,36 @@ public class AdminDao implements CrudOperation<Admin> {
 
     @Override
     public Admin getById(int id) {
-    String sql =
-        "SELECT a.id AS admin_id,\n"
-            + "                       u.name,\n"
-            + "                       u.email,\n"
-            + "                       u.password,\n"
-            + "                       u.registration_date,\n"
-            + "                       a.admin_name\n"
-            + "                FROM admin a\n"
-            + "                JOIN \"User\" u ON a.user_id = u.id\n"
-            + "                WHERE a.id = ?;";
+        String sql =
+            "SELECT a.id AS admin_id,\n"
+                + "                       u.name,\n"
+                + "                       u.email,\n"
+                + "                       u.password,\n"
+                + "                       u.registration_date,\n"
+                + "                       a.admin_name\n"
+                + "                FROM admin a\n"
+                + "                JOIN \"User\" u ON a.user_id = u.id\n"
+                + "                WHERE a.id = ?;";
 
-        try (Connection conn = dataSource.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, id);
-            ResultSet rs = ps.executeQuery();
+            try (Connection conn = dataSource.getConnection();
+                 PreparedStatement ps = conn.prepareStatement(sql)) {
+                ps.setInt(1, id);
+                ResultSet rs = ps.executeQuery();
 
-            if (rs.next()) {
-                Admin admin = new Admin(
-                        rs.getInt("admin_id"),
-                        rs.getString("name"),
-                        rs.getString("email"),
-                        rs.getString("password"),
-                        rs.getTimestamp("registration_date").toLocalDateTime(),
-                        rs.getString("admin_name")
-                );
-                return admin;
+                if (rs.next()) {
+                    Admin admin = new Admin(
+                            rs.getInt("admin_id"),
+                            rs.getString("name"),
+                            rs.getString("email"),
+                            rs.getString("password"),
+                            rs.getTimestamp("registration_date").toLocalDateTime(),
+                            rs.getString("admin_name")
+                    );
+                    return admin;
+                }
+            } catch (SQLException e) {
+                throw new RuntimeException("Not implemented", e);
             }
-        } catch (SQLException e) {
-            throw new RuntimeException("Not implemented", e);
-        }
-        return null;
+            return null;
     }
 }

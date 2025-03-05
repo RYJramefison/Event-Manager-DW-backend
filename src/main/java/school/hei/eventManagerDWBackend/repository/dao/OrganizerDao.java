@@ -7,6 +7,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,7 +28,32 @@ public class OrganizerDao implements CrudOperation<Organizer> {
 
   @Override
   public List<Organizer> getAll(int page, int size) {
-    return List.of();
+    List<Organizer> organizers = new ArrayList<>();
+      String sql = "SELECT o.id , u.name, u.email, u.password, u.registration_date, o.company FROM" +
+              " organizer o INNER JOIN \"User\" u ON u.id = o.user_id LIMIT ? OFFSET ?";
+      int offset = size * (page - 1);
+      try (Connection connection = dataSource.getConnection();
+           PreparedStatement pstm = connection.prepareStatement(sql)){
+              pstm.setInt(1, size);
+              pstm.setInt(2, offset);
+
+           try (ResultSet res = pstm.executeQuery()){
+             while (res.next()){
+                Organizer organizer = new Organizer(
+                        res.getInt("id"),
+                        res.getString("name"),
+                        res.getString("email"),
+                        res.getString("password"),
+                        res.getTimestamp("registration_date").toLocalDateTime(),
+                        res.getString("company")
+                );
+                organizers.add(organizer);
+             }
+           }
+      } catch (SQLException e){
+        throw new RuntimeException("Not implemented", e);
+      }
+      return organizers;
   }
 
   @Override
@@ -58,7 +84,7 @@ public class OrganizerDao implements CrudOperation<Organizer> {
       }
 
     } catch (SQLException e) {
-      throw new RuntimeException(e);
+      throw new RuntimeException("Not implemented", e);
     }
       return null;
   }
