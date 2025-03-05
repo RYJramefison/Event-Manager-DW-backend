@@ -1,6 +1,11 @@
 package school.hei.eventManagerDWBackend.entity;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import java.time.LocalDateTime;
+@Getter
+@Setter
 
 public class Event {
   private int id;
@@ -31,6 +36,9 @@ public class Event {
   public Event(int id, String location) {
     this.id = id;
     this.location = location;
+  }
+
+  public Event() {
   }
 
   @Override
