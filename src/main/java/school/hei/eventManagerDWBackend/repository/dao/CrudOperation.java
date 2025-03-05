@@ -12,5 +12,5 @@ public interface CrudOperation<T> {
 
   List<T> getAll(int page, int size);
 
-  Optional<T> getById(int id);
+  T getById(int id);
 }

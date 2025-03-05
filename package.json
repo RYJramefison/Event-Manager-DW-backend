@@ -15,5 +15,8 @@
     "url": "https://github.com/RYJramefison/Event-Manager-DW-backend/issues"
   },
   "homepage": "https://github.com/RYJramefison/Event-Manager-DW-backend#readme",
-  "description": ""
+  "description": "",
+  "dependencies": {
+    "mvn": "^3.5.0"
+  }
 }
