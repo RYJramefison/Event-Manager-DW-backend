@@ -19,6 +19,10 @@ public class Organizer extends User {
     this.company = company;
   }
 
+  public Organizer( String company) {
+    super();
+  }
+
   public String getCompany() {
     return company;
   }
