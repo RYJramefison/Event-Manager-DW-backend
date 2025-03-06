@@ -97,8 +97,8 @@ public class ClientDao implements CrudOperation<Client> {
     String sql =
         "SELECT c.id AS client_id, u.id, u.name, u.email, u.password, u.registration_date\n"
             + "FROM client c\n"
-            + "         INNER JOIN public.\"User\" u on c.user_id = u.id\n"
-            + " WHERE id = ?";
+            + "INNER JOIN \"User\" u ON c.user_id = u.id\n"
+            + "WHERE u.id = 1;";
     try (Connection connection = dataSource.getConnection();
         PreparedStatement stmt = connection.prepareStatement(sql)) {
       stmt.setInt(1, id);
