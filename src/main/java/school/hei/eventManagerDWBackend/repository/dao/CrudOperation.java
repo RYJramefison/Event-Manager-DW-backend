@@ -10,7 +10,7 @@ public interface CrudOperation<T> {
 
   void update(T entity);
 
-  void delete(T entity);
+  void deleteById(int id);
 
   List<T> getAll(int page, int size);
 

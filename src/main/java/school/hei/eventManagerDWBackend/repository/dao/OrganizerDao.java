@@ -46,15 +46,19 @@ public class OrganizerDao implements CrudOperation<Organizer> {
     }
   }
 
-  @Override
-  public void delete(Organizer organizer) {
-    String sql = "DELETE FROM organizer WHERE id = ?";
+  public void deleteById(int id) {
+    String sql = "DELETE FROM Organizer WHERE id = ?";
     try (Connection connection = dataSource.getConnection();
-        PreparedStatement stmt = connection.prepareStatement(sql)) {
-      stmt.setInt(1, organizer.getId());
-      stmt.executeUpdate();
+         PreparedStatement stmt = connection.prepareStatement(sql)) {
+      stmt.setInt(1, id);
+      int rowsAffected = stmt.executeUpdate();
+      if (rowsAffected > 0) {
+        System.out.println("Événement supprimé avec succès !");
+      } else {
+        System.out.println("Aucun événement trouvé avec cet ID.");
+      }
     } catch (SQLException e) {
-      throw new RuntimeException(e);
+      e.printStackTrace();
     }
   }
 

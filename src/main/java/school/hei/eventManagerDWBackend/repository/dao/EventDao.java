@@ -52,18 +52,6 @@ public class EventDao implements CrudOperation<Event> {
     }
   }
 
-  @Override
-  public void delete(Event event) {
-    String sql = "DELETE FROM event WHERE id = ?";
-    try (Connection connection = dataSource.getConnection();
-        PreparedStatement stmt = connection.prepareStatement(sql)) {
-      stmt.setInt(1, event.getId());
-      stmt.executeUpdate();
-    } catch (SQLException e) {
-      e.printStackTrace();
-    }
-  }
-
   public void deleteById(int id) {
     String sql = "DELETE FROM event WHERE id = ?";
     try (Connection connection = dataSource.getConnection();

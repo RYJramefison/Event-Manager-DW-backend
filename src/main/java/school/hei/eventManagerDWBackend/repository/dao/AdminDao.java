@@ -61,19 +61,6 @@ public class AdminDao implements CrudOperation<Admin> {
   }
 
   @Override
-  public void delete(Admin entity) {
-    String sql = "DELETE FROM admin WHERE id = ?";
-    try (Connection conn = dataSource.getConnection();
-        PreparedStatement ps = conn.prepareStatement(sql)) {
-      ps.setInt(1, entity.getId());
-      ps.executeUpdate();
-    } catch (SQLException e) {
-      System.err.println("Error deleting admin: " + e.getMessage());
-      throw new RuntimeException(e);
-    }
-  }
-
-  @Override
   public List<Admin> getAll(int page, int size) {
     List<Admin> admins = new ArrayList<>();
     String sql =

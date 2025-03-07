@@ -48,15 +48,19 @@ public class TicketDao implements CrudOperation<Ticket> {
         }
     }
 
-    @Override
-    public void delete(Ticket ticket) {
-        String sql = "DELETE FROM ticket WHERE id = ?";
+    public void deleteById(int id) {
+        String sql = "DELETE FROM Ticket WHERE id = ?";
         try (Connection connection = dataSource.getConnection();
              PreparedStatement stmt = connection.prepareStatement(sql)) {
-            stmt.setInt(1, ticket.getId());
-            stmt.executeUpdate();
+            stmt.setInt(1, id);
+            int rowsAffected = stmt.executeUpdate();
+            if (rowsAffected > 0) {
+                System.out.println("Événement supprimé avec succès !");
+            } else {
+                System.out.println("Aucun événement trouvé avec cet ID.");
+            }
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
         }
     }
 
