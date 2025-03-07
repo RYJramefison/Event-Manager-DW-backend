@@ -1,5 +1,6 @@
 package school.hei.eventManagerDWBackend.repository.dao;
 
+import org.springframework.stereotype.Repository;
 import school.hei.eventManagerDWBackend.entity.Client;
 import school.hei.eventManagerDWBackend.repository.db.DataSource;
 
@@ -9,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@Repository
 public class ClientDao implements CrudOperation<Client> {
 
   private final DataSource dataSource = new DataSource();

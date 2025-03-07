@@ -1,5 +1,6 @@
 package school.hei.eventManagerDWBackend.repository.dao;
 
+import org.springframework.stereotype.Repository;
 import school.hei.eventManagerDWBackend.entity.Reservation;
 import school.hei.eventManagerDWBackend.entity.StatusReservation;
 import school.hei.eventManagerDWBackend.repository.db.DataSource;
@@ -10,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@Repository
 public class ReservationDao implements CrudOperation<Reservation> {
 
   private final DataSource dataSource = new DataSource();

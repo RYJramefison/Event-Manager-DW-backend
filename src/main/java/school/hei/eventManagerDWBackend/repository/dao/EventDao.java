@@ -1,5 +1,6 @@
 package school.hei.eventManagerDWBackend.repository.dao;
 
+import org.springframework.stereotype.Repository;
 import school.hei.eventManagerDWBackend.entity.Event;
 import school.hei.eventManagerDWBackend.entity.Organizer;
 import school.hei.eventManagerDWBackend.entity.StatusEvent;
@@ -10,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@Repository
 public class EventDao implements CrudOperation<Event> {
   private final DataSource dataSource = new DataSource();
 
