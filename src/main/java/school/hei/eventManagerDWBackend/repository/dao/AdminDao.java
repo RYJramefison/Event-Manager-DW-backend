@@ -1,5 +1,6 @@
 package school.hei.eventManagerDWBackend.repository.dao;
 
+import org.springframework.stereotype.Repository;
 import school.hei.eventManagerDWBackend.entity.Admin;
 import school.hei.eventManagerDWBackend.repository.db.DataSource;
 
@@ -11,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@Repository
 public class AdminDao implements CrudOperation<Admin> {
   private final DataSource dataSource = new DataSource();
 
@@ -39,6 +41,22 @@ public class AdminDao implements CrudOperation<Admin> {
     } catch (SQLException e) {
       System.err.println("Error updating admin: " + e.getMessage());
       throw new RuntimeException(e);
+    }
+  }
+
+  public void deleteById(int id) {
+    String sql = "DELETE FROM admin WHERE id = ?";
+    try (Connection connection = dataSource.getConnection();
+         PreparedStatement stmt = connection.prepareStatement(sql)) {
+      stmt.setInt(1, id);
+      int rowsAffected = stmt.executeUpdate();
+      if (rowsAffected > 0) {
+        System.out.println("Événement supprimé avec succès !");
+      } else {
+        System.out.println("Aucun événement trouvé avec cet ID.");
+      }
+    } catch (SQLException e) {
+      e.printStackTrace();
     }
   }
 
