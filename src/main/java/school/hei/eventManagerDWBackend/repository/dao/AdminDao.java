@@ -64,9 +64,7 @@ public class AdminDao implements CrudOperation<Admin> {
   public List<Admin> getAll(int page, int size) {
     List<Admin> admins = new ArrayList<>();
     String sql =
-        "SELECT a.id AS admin_id, u.name, u.email, u.password, u.registration_date, a.admin_name\n"
-            + "                                      FROM admin a JOIN \"User\" u ON a.user_id = u.id\n"
-            + "                                      LIMIT ? OFFSET ?;";
+        "SELECT * FROM admin_user_view LIMIT ? OFFSET ?;";
 
     try (Connection conn = dataSource.getConnection();
         PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -77,12 +75,10 @@ public class AdminDao implements CrudOperation<Admin> {
       while (rs.next()) {
         Admin admin =
             new Admin(
-                rs.getInt("admin_id"),
-                rs.getString("name"),
-                rs.getString("email"),
-                rs.getString("password"),
-                rs.getTimestamp("registration_date").toLocalDateTime(),
-                rs.getString("admin_name"));
+                    rs.getInt("admin_id"),
+                    rs.getString("admin_name"),
+                    rs.getString("email"),
+                    rs.getTimestamp("registration_date").toLocalDateTime());
         admins.add(admin);
       }
     } catch (SQLException e) {
@@ -95,9 +91,7 @@ public class AdminDao implements CrudOperation<Admin> {
   @Override
   public Optional<Admin> getById(int id) {
     String sql =
-        "SELECT a.id AS admin_id, u.name, u.email, u.password, u.registration_date, a.admin_name\n"
-            + "                FROM admin a JOIN \"User\" u ON a.user_id = u.id\n"
-            + "                WHERE a.id = ?";
+        "SELECT * FROM admin_user_view WHERE admin_id = ?;";
 
     try (Connection conn = dataSource.getConnection();
         PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -108,11 +102,9 @@ public class AdminDao implements CrudOperation<Admin> {
         Admin admin =
             new Admin(
                 rs.getInt("admin_id"),
-                rs.getString("name"),
+                rs.getString("admin_name"),
                 rs.getString("email"),
-                rs.getString("password"),
-                rs.getTimestamp("registration_date").toLocalDateTime(),
-                rs.getString("admin_name"));
+                rs.getTimestamp("registration_date").toLocalDateTime());
         return Optional.of(admin);
       }
     } catch (SQLException e) {
