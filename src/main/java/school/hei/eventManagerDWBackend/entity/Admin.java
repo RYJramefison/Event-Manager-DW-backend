@@ -22,7 +22,12 @@ public class Admin extends User {
     this.adminName = adminName;
   }
 
-  public String getAdminName() {
+    public Admin(int adminId, String adminName, String email, LocalDateTime registrationDate) {
+        super(adminId, adminName, email, registrationDate);
+        this.adminName = adminName;
+    }
+
+    public String getAdminName() {
     return adminName;
   }
 
