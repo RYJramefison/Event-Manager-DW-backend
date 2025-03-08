@@ -5,6 +5,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 import java.time.LocalDateTime;
+
 @Getter
 @Setter
 @ToString(callSuper = true)
@@ -13,5 +14,9 @@ public class Client extends User {
   public Client(
       int id, String name, String email, String password, LocalDateTime registrationDate) {
     super(id, name, email, password, registrationDate);
+  }
+
+  public Client(int id, String name, String email, LocalDateTime registrationDate) {
+    super(id, name, email, registrationDate);
   }
 }
