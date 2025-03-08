@@ -5,6 +5,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 import java.time.LocalDateTime;
+
 @Getter
 @Setter
 @ToString(callSuper = true)
@@ -19,6 +20,12 @@ public class Organizer extends User {
       LocalDateTime registrationDate,
       String company) {
     super(id, name, email, password, registrationDate);
+    this.company = company;
+  }
+
+  public Organizer(
+      int eventId, String eventName, String email, LocalDateTime registrationDate, String company) {
+    super(eventId, eventName, email, registrationDate);
     this.company = company;
   }
 
