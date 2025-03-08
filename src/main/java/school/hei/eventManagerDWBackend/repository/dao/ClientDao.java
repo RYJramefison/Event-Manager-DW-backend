@@ -74,10 +74,7 @@ public class ClientDao implements CrudOperation<Client> {
   public List<Client> getAll(int page, int size) {
     List<Client> clients = new ArrayList<>();
     String sql =
-        "SELECT c.id AS client_id, u.id, u.name, u.email, u.password, u.registration_date\n"
-            + "FROM client c\n"
-            + "         INNER JOIN public.\"User\" u on c.user_id = u.id\n"
-            + "LIMIT ? OFFSET ?";
+        "SELECT * FROM client_user_view LIMIT ? OFFSET ?";
     try (Connection connection = dataSource.getConnection();
         PreparedStatement stmt = connection.prepareStatement(sql)) {
       stmt.setInt(1, size);
@@ -86,10 +83,9 @@ public class ClientDao implements CrudOperation<Client> {
       while (rs.next()) {
         clients.add(
             new Client(
-                rs.getInt("id"),
-                rs.getString("name"),
+                rs.getInt("client_id"),
+                rs.getString("client_name"),
                 rs.getString("email"),
-                rs.getString("password"),
                 rs.getTimestamp("registration_date").toLocalDateTime()));
       }
     } catch (SQLException e) {
@@ -101,10 +97,7 @@ public class ClientDao implements CrudOperation<Client> {
   @Override
   public Optional<Client> getById(int id) {
     String sql =
-        "SELECT c.id AS client_id, u.id, u.name, u.email, u.password, u.registration_date\n"
-            + "FROM client c\n"
-            + "INNER JOIN \"User\" u ON c.user_id = u.id\n"
-            + "WHERE u.id = 1;";
+        "SELECT * FROM client_user_view WHERE client_id = ?";
     try (Connection connection = dataSource.getConnection();
         PreparedStatement stmt = connection.prepareStatement(sql)) {
       stmt.setInt(1, id);
@@ -112,10 +105,9 @@ public class ClientDao implements CrudOperation<Client> {
       if (rs.next()) {
         return Optional.of(
             new Client(
-                rs.getInt("id"),
-                rs.getString("name"),
+                rs.getInt("client_id"),
+                rs.getString("client_name"),
                 rs.getString("email"),
-                rs.getString("password"),
                 rs.getTimestamp("registration_date").toLocalDateTime()));
       }
     } catch (SQLException e) {
