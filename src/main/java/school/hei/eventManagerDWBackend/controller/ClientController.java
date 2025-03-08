@@ -13,36 +13,36 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/api/client")
 public class ClientController {
-    private final ClientService adminService;
+    private final ClientService clientService;
 
     @GetMapping
     public ResponseEntity<List<Client>> getAllClients(@RequestParam(defaultValue = "0") int page,
                                                     @RequestParam(defaultValue = "10") int size) {
-        return ResponseEntity.ok(adminService.findAllClients(page, size));
+        return ResponseEntity.ok(clientService.findAllClients(page, size));
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Client> getClientById(@PathVariable int id) {
-        Optional<Client> admin = adminService.findClientById(id);
-        return admin.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+        Optional<Client> client = clientService.findClientById(id);
+        return client.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PostMapping
-    public ResponseEntity<Void> createClient(@RequestBody Client admin) {
-        adminService.createClient(admin);
+    public ResponseEntity<Void> createClient(@RequestBody Client client) {
+        clientService.createClient(client);
         return ResponseEntity.ok().build();
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Void> updateClient(@PathVariable int id, @RequestBody Client admin) {
-        admin.setId(id);
-        adminService.updateClient(admin);
+    public ResponseEntity<Void> updateClient(@PathVariable int id, @RequestBody Client client) {
+        client.setId(id);
+        clientService.updateClient(client);
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteClient(@PathVariable int id) {
-        adminService.deleteClientById(id);
+        clientService.deleteClientById(id);
         return ResponseEntity.ok().build();
     }
 }
