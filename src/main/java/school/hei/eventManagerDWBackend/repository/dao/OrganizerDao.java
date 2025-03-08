@@ -66,10 +66,7 @@ public class OrganizerDao implements CrudOperation<Organizer> {
   public List<Organizer> getAll(int page, int size) {
     List<Organizer> organizers = new ArrayList<>();
     String sql =
-        "SELECT o.id AS event_id, u.name, u.email, u.password, u.registration_date, o.company "
-            + "FROM organizer o "
-            + "JOIN \"User\" u ON o.user_id = u.id "
-            + "LIMIT ? OFFSET ?";
+        "SELECT * FROM organizer_user_view LIMIT ? OFFSET ?";
     try (Connection connection = dataSource.getConnection();
         PreparedStatement stmt = connection.prepareStatement(sql)) {
       stmt.setInt(1, size);
@@ -78,10 +75,9 @@ public class OrganizerDao implements CrudOperation<Organizer> {
       while (rs.next()) {
         organizers.add(
             new Organizer(
-                rs.getInt("event_id"),
-                rs.getString("name"),
+                rs.getInt("organizer_id"),
+                rs.getString("organizer_name"),
                 rs.getString("email"),
-                rs.getString("password"),
                 rs.getTimestamp("registration_date").toLocalDateTime(),
                 rs.getString("company")));
       }
@@ -94,10 +90,7 @@ public class OrganizerDao implements CrudOperation<Organizer> {
   @Override
   public Optional<Organizer> getById(int id) {
     String sql =
-        "SELECT o.id AS event_id, u.name, u.email, u.password, u.registration_date, o.company "
-            + "FROM organizer o "
-            + "JOIN \"User\" u ON o.user_id = u.id "
-            + "WHERE o.id = ?";
+        "SELECT * FROM organizer_user_view WHERE organizer_id = ?";
     try (Connection connection = dataSource.getConnection();
         PreparedStatement stmt = connection.prepareStatement(sql)) {
       stmt.setInt(1, id);
@@ -105,10 +98,9 @@ public class OrganizerDao implements CrudOperation<Organizer> {
       if (rs.next()) {
         return Optional.of(
             new Organizer(
-                rs.getInt("event_id"),
-                rs.getString("name"),
+                rs.getInt("organizer_id"),
+                rs.getString("organizer_name"),
                 rs.getString("email"),
-                rs.getString("password"),
                 rs.getTimestamp("registration_date").toLocalDateTime(),
                 rs.getString("company")));
       }
