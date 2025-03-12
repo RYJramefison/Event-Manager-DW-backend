@@ -97,6 +97,48 @@ public class ReservationDao implements CrudOperation<Reservation> {
     return reservations;
   }
 
+  public List<Reservation> filter(List<Criteria> criterias) {
+    List<Reservation> reservations = new ArrayList<>();
+    String sql = "SELECT id, client_id, event_id, reservation_date, status FROM reservation WHERE 1=1";
+
+    for (Criteria criteria : criterias) {
+      if ("clientId".equals(criteria.getColumn())){
+        sql += " AND client_id =" + criteria.getValue();
+      }
+      else if ("reservationDate".equals(criteria.getColumn())){
+        sql += " AND reservation_date =" + criteria.getValue();
+      }
+      else if ("reservationDateMin".equals(criteria.getColumn())){
+        sql += " AND reservation_date >=" + criteria.getValue();
+      }
+      else if ("reservationDateMax".equals(criteria.getColumn())){
+        sql += " AND reservation_date <=" + criteria.getValue();
+      }
+      else if ("eventId".equals(criteria.getColumn())){
+        sql += " AND event_id =" + criteria.getValue();
+      }
+      else if ("status".equals(criteria.getColumn())){
+        sql += " AND status ILIKE '%" + criteria.getValue() + "%'";
+      }
+    }
+    try (Connection connection = dataSource.getConnection();
+         Statement stmt = connection.createStatement()) {
+      ResultSet rs = stmt.executeQuery(sql);
+      while (rs.next()) {
+        reservations.add(
+                new Reservation(
+                        rs.getInt("id"),
+                        rs.getInt("client_id"),
+                        rs.getInt("event_id"),
+                        rs.getTimestamp("reservation_date").toLocalDateTime(),
+                        StatusReservation.valueOf(rs.getString("status"))));
+      }
+    } catch (SQLException e) {
+      throw new RuntimeException(e);
+    }
+    return reservations;
+  }
+
   @Override
   public Optional<Reservation> getById(int id) {
     String sql =

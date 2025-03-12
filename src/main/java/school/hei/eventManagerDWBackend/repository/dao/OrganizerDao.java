@@ -87,6 +87,36 @@ public class OrganizerDao implements CrudOperation<Organizer> {
     return organizers;
   }
 
+  public List<Organizer> filter(List<Criteria> criterias) {
+    List<Organizer> organizers = new ArrayList<>();
+    String sql = "SELECT * FROM organizer_user_view WHERE 1=1";
+
+    for (Criteria criteria : criterias) {
+      if ("name".equals(criteria.getColumn())){
+        sql += " AND organizer_name ILIKE '%" + criteria.getValue() + "%'";
+      }
+      else if ("company".equals(criteria.getColumn())){
+        sql += " AND company ILIKE '%" + criteria.getValue() + "%'";
+      }
+    }
+    try (Connection connection = dataSource.getConnection();
+         Statement stmt = connection.createStatement()) {
+      ResultSet rs = stmt.executeQuery(sql);
+      while (rs.next()) {
+        organizers.add(
+                new Organizer(
+                        rs.getInt("organizer_id"),
+                        rs.getString("organizer_name"),
+                        rs.getString("email"),
+                        rs.getTimestamp("registration_date").toLocalDateTime(),
+                        rs.getString("company")));
+      }
+    } catch (SQLException e) {
+      throw new RuntimeException(e);
+    }
+    return organizers;
+  }
+
   @Override
   public Optional<Organizer> getById(int id) {
     String sql =

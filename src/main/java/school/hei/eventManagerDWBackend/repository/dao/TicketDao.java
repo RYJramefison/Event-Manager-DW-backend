@@ -87,6 +87,39 @@ public class TicketDao implements CrudOperation<Ticket> {
         return tickets;
     }
 
+    public List<Ticket> filter(List<Criteria> criterias) {
+        List<Ticket> tickets = new ArrayList<>();
+        String sql = "SELECT id, ticket_code, reservation_id, ticket_type_id FROM ticket WHERE 1=1";
+
+        for (Criteria criteria : criterias) {
+            if ("ticketCode".equals(criteria.getColumn())){
+                sql += " AND ticket_code ILIKE '%" + criteria.getValue() + "%'";
+            }
+            else if ("reservetionId".equals(criteria.getColumn())){
+                sql += " AND reservation_id=" + criteria.getValue();
+            }
+            else if ("ticketTypeId".equals(criteria.getColumn())){
+                sql += " AND ticket_type_id =" + criteria.getValue();
+            }
+        }
+
+        try (Connection connection = dataSource.getConnection();
+             Statement stmt = connection.createStatement()) {
+            ResultSet rs = stmt.executeQuery(sql);
+            while (rs.next()) {
+                tickets.add(new Ticket(
+                        rs.getInt("id"),
+                        rs.getString("ticket_code"),
+                        rs.getInt("reservation_id"),
+                        rs.getInt("ticket_type_id")
+                ));
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return tickets;
+    }
+
     @Override
     public Optional<Ticket> getById(int id) {
         String sql = "SELECT id, ticket_code, reservation_id, ticket_type_id FROM ticket WHERE id = ?";
