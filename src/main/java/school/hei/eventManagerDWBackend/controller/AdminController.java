@@ -21,11 +21,17 @@ public class AdminController {
         return ResponseEntity.ok(adminService.getAllAdmins(page, size));
     }
 
+    @GetMapping("/filter")
+    public ResponseEntity<List<Admin>> filterAdmins(@RequestParam String name) {
+        return ResponseEntity.ok(adminService.filterAdmin(name));
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<Admin> getAdminById(@PathVariable int id) {
         Optional<Admin> admin = adminService.getAdminById(id);
         return admin.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
+
 
     @PostMapping
     public ResponseEntity<Void> createAdmin(@RequestBody Admin admin) {

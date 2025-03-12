@@ -3,6 +3,7 @@ package school.hei.eventManagerDWBackend.service;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import school.hei.eventManagerDWBackend.entity.Event;
+import school.hei.eventManagerDWBackend.repository.dao.Criteria;
 import school.hei.eventManagerDWBackend.repository.dao.EventDao;
 
 import java.util.List;
@@ -15,6 +16,10 @@ public class EventService {
 
   public List<Event> findAllEvents(int page, int size) {
     return eventDao.getAll(page, size);
+  }
+
+  public List<Event> filterEvent(List<Criteria> criterias) {
+    return eventDao.filter(criterias);
   }
 
   public Optional<Event> findEventById(int id) {

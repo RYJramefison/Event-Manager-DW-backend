@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+
 @Repository
 public class EventDao implements CrudOperation<Event> {
   private final DataSource dataSource = new DataSource();
@@ -119,6 +120,68 @@ public class EventDao implements CrudOperation<Event> {
     }
     return events;
   }
+
+  public List<Event> filter(List<Criteria> criterias){
+    List<Event> events = new ArrayList<>();
+    String sql = "SELECT e.id AS event_id, o.id AS organizer_id, o.company, e.title, e.description, e.event_date, e.location, e.status ,\n" +
+            "    U.id, U.name, U.email, U.password, U.registration_date FROM event e\n" +
+            "    INNER JOIN organizer o ON e.organizer_id = o.id\n" +
+            "    INNER JOIN \"User\" U on U.id = o.user_id WHERE 1=1\n";
+
+    for (Criteria criteria : criterias) {
+      if ("company".equals(criteria.getColumn())){
+        sql += " and o.company ilike '%"+ criteria.getValue().toString() + "%'";
+      }
+      else if ("dateEvent".equals(criteria.getColumn())){
+        sql += " and e.event_date ='"+ criteria.getValue().toString() + "'";
+      }
+      else if ("dateEventMin".equals(criteria.getColumn())){
+        sql += " and e.event_date >='"+ criteria.getValue().toString() + "'";
+      }
+      else if ("dateEventMax".equals(criteria.getColumn())){
+        sql += " and e.event_date <='"+ criteria.getValue().toString() + "'";
+      }
+      else if ("status".equals(criteria.getColumn())){
+        sql += " and e.status ='"+ criteria.getValue().toString() + "'";
+      }
+      else if ("location".equals(criteria.getColumn())){
+        sql += " and e.location ilike '%"+ criteria.getValue().toString() + "%'";
+      }
+      else if ("title".equals(criteria.getColumn())){
+        sql += " and e.title ilike '%"+ criteria.getValue().toString() + "%'";
+      }
+    }
+
+    try (Connection connection = dataSource.getConnection();
+         Statement stm = connection.createStatement()) {
+      ResultSet rs = stm.executeQuery(sql);
+      while (rs.next()) {
+        Organizer organizer =
+                new Organizer(
+                        rs.getInt("id"),
+                        rs.getString("name"),
+                        rs.getString("email"),
+                        rs.getString("password"),
+                        rs.getTimestamp("registration_date").toLocalDateTime(),
+                        rs.getString("company"));
+        Event event =
+                new Event(
+                        rs.getInt("event_id"),
+                        organizer,
+                        rs.getString("title"),
+                        rs.getString("description"),
+                        rs.getTimestamp("event_date").toLocalDateTime(),
+                        rs.getString("location"),
+                        StatusEvent.valueOf(rs.getString("status")));
+        events.add(event);
+      }
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+    return events;
+
+    }
+
 
   @Override
   public Optional<Event> getById(int id) {

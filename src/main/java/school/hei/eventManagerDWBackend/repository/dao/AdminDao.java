@@ -44,6 +44,7 @@ public class AdminDao implements CrudOperation<Admin> {
     }
   }
 
+
   public void deleteById(int id) {
     String sql = "DELETE FROM admin WHERE id = ?";
     try (Connection connection = dataSource.getConnection();
@@ -86,6 +87,30 @@ public class AdminDao implements CrudOperation<Admin> {
       throw new RuntimeException(e);
     }
     return admins;
+  }
+
+  public List<Admin> filter(String criteria){
+    List<Admin> admins = new ArrayList<>();
+    String sql = "select admin_id, admin_name, email, registration_date from admin_user_view WHERE admin_name ILIKE ?";
+
+    try (Connection connection = dataSource.getConnection();
+         PreparedStatement pstm = connection.prepareStatement(sql)) {
+         pstm.setString(1,'%' + criteria + '%');
+
+         try (ResultSet res = pstm.executeQuery()){
+           while (res.next()) {
+             Admin admin = new Admin(
+                     res.getInt("admin_id"),
+                     res.getString("admin_name"),
+                     res.getString("email"),
+                     res.getTimestamp("registration_date").toLocalDateTime());
+             admins.add(admin);
+           }
+           return admins;
+         }
+    } catch (SQLException e) {
+      throw new RuntimeException("filter admin not implemented", e);
+    }
   }
 
   @Override
