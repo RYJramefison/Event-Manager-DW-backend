@@ -21,6 +21,10 @@ public class AdminService {
         return adminDao.getById(id);
     }
 
+    public List<Admin> filterAdmin(String criteria){
+        return adminDao.filter(criteria);
+    }
+
     public void createAdmin(Admin admin) {
         adminDao.create(admin);
     }

@@ -22,7 +22,7 @@ class EventManagerDwBackendApplicationTests {
 		//Admin actual = subjectAdmin.getById(1);
 		List<Admin> actual = subjectAdmin.getAll(1,2);
 
-		Assertions.assertTrue(actual.contains(alice));
+		Assertions.assertEquals(alice, actual);
 	}
 
 }
