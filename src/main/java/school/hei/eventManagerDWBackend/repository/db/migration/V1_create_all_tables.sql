@@ -8,7 +8,8 @@ CREATE TABLE if not exists "User"
     name              VARCHAR(255)        NOT NULL,
     email             VARCHAR(255) UNIQUE NOT NULL,
     password          TEXT                NOT NULL,
-    registration_date TIMESTAMP DEFAULT NOW()
+    registration_date TIMESTAMP DEFAULT NOW(),
+    type VARCHAR(50) CHECK (type IN ('client', 'organizer', 'admin')) DEFAULT 'client'
 );
 
 -- ===========================
