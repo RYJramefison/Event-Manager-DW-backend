@@ -4,8 +4,10 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import school.hei.eventManagerDWBackend.entity.Organizer;
+import school.hei.eventManagerDWBackend.repository.dao.Criteria;
 import school.hei.eventManagerDWBackend.service.OrganizerService;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,6 +21,20 @@ public class OrganizerController {
     public ResponseEntity<List<Organizer>> getAllOrganizers(@RequestParam(defaultValue = "0") int page,
                                                       @RequestParam(defaultValue = "10") int size) {
         return ResponseEntity.ok(adminService.findAllOrganizers(page, size));
+    }
+
+    @GetMapping("/filter")
+    public ResponseEntity<List<Organizer>> filterOrganizers(@RequestParam(required = false) String name,
+                                                            @RequestParam(required = false) String company) {
+        List<Criteria> criteria = new ArrayList<>();
+
+        if (name != null){
+            criteria.add(new Criteria("name", name));
+        }
+        if (company != null){
+            criteria.add(new Criteria("company", company));
+        }
+        return ResponseEntity.ok(adminService.filterOrganizer(criteria));
     }
 
     @GetMapping("/{id}")
