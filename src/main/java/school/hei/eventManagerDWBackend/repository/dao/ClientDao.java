@@ -1,6 +1,7 @@
 package school.hei.eventManagerDWBackend.repository.dao;
 
 import org.springframework.stereotype.Repository;
+import school.hei.eventManagerDWBackend.entity.Admin;
 import school.hei.eventManagerDWBackend.entity.Client;
 import school.hei.eventManagerDWBackend.repository.db.DataSource;
 
@@ -93,6 +94,32 @@ public class ClientDao implements CrudOperation<Client> {
     }
     return clients;
   }
+
+  public List<Client> filter(String criteria){
+    List<Client> clients = new ArrayList<>();
+    String sql = "SELECT client_id, client_name, email, registration_date FROM" +
+            " client_user_view WHERE client_name ILIKE ?";
+
+    try (Connection connection = dataSource.getConnection();
+         PreparedStatement pstm = connection.prepareStatement(sql)) {
+      pstm.setString(1,'%' + criteria + '%');
+
+      try (ResultSet res = pstm.executeQuery()){
+        while (res.next()) {
+          Client client = new Client(
+                  res.getInt("client_id"),
+                  res.getString("client_name"),
+                  res.getString("email"),
+                  res.getTimestamp("registration_date").toLocalDateTime());
+          clients.add(client);
+        }
+        return clients;
+      }
+    } catch (SQLException e) {
+      throw new RuntimeException("filter client not implemented", e);
+    }
+  }
+
 
   @Override
   public Optional<Client> getById(int id) {

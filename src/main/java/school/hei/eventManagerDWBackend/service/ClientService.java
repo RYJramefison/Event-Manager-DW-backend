@@ -2,6 +2,7 @@ package school.hei.eventManagerDWBackend.service;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import school.hei.eventManagerDWBackend.entity.Admin;
 import school.hei.eventManagerDWBackend.entity.Client;
 import school.hei.eventManagerDWBackend.repository.dao.ClientDao;
 
@@ -15,6 +16,10 @@ public class ClientService {
 
   public List<Client> findAllClients(int page, int size) {
     return clientDao.getAll(page, size);
+  }
+
+  public List<Client> filterClients(String criteria){
+    return clientDao.filter(criteria);
   }
 
   public Optional<Client> findClientById(int id) {

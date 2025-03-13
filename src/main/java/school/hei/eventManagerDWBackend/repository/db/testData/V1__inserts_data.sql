@@ -92,7 +92,7 @@ INSERT INTO Ticket (reservation_id, ticket_type_id, ticket_code) VALUES
 
 INSERT INTO Payment (reservation_id, amount, method, status) VALUES
 (1, 150.00, 'CARD', 'PAID'),
-(2, 100.00, 'paypal', 'PENDING'),
+(2, 100.00, 'PAYPAL', 'PENDING'),
 (3, 20.00, 'MOBILE_MONEY', 'FAILED'),
 (4, 75.00, 'CARD', 'PAID'),
 (5, 150.00, 'PAYPAL', 'PENDING');

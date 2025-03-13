@@ -3,6 +3,7 @@ package school.hei.eventManagerDWBackend.controller;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import school.hei.eventManagerDWBackend.entity.Admin;
 import school.hei.eventManagerDWBackend.entity.Client;
 import school.hei.eventManagerDWBackend.service.ClientService;
 
@@ -20,6 +21,11 @@ public class ClientController {
     public ResponseEntity<List<Client>> getAllClients(@RequestParam(defaultValue = "0") int page,
                                                     @RequestParam(defaultValue = "10") int size) {
         return ResponseEntity.ok(clientService.findAllClients(page, size));
+    }
+
+    @GetMapping("/filter")
+    public ResponseEntity<List<Client>> filterClients(@RequestParam String name) {
+        return ResponseEntity.ok(clientService.filterClients(name));
     }
 
     @GetMapping("/{id}")
