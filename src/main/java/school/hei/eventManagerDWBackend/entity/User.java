@@ -11,23 +11,26 @@ public abstract class User {
   private String email;
   private String password;
   private LocalDateTime registrationDate;
+  private UserType userType;
 
-  public User(int id, String name, String email, String password, LocalDateTime registrationDate) {
+  public User(int id, String name, String email, String password, LocalDateTime registrationDate, UserType userType) {
     this.id = id;
     this.name = name;
     this.email = email;
     this.password = password;
     this.registrationDate = registrationDate;
+    this.userType = userType;
   }
 
-  public User(int id, String name, String email, LocalDateTime registrationDate) {
+  public User(int id, String name, String email, LocalDateTime registrationDate, UserType userType) {
     this.id = id;
     this.name = name;
     this.email = email;
     this.registrationDate = registrationDate;
+    this.userType = userType;
   }
 
-  public int getId() {
+    public int getId() {
     return id;
   }
 
@@ -65,5 +68,13 @@ public abstract class User {
 
   public void setRegistrationDate(LocalDateTime registrationDate) {
     this.registrationDate = registrationDate;
+  }
+
+  public UserType getUserType() {
+    return userType;
+  }
+
+  public void setUserType(UserType userType) {
+    this.userType = userType;
   }
 }

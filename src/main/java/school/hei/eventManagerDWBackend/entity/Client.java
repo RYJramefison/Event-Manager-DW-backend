@@ -12,11 +12,11 @@ import java.time.LocalDateTime;
 public class Client extends User {
 
   public Client(
-      int id, String name, String email, String password, LocalDateTime registrationDate) {
-    super(id, name, email, password, registrationDate);
+      int id, String name, String email, String password, LocalDateTime registrationDate, UserType userType) {
+    super(id, name, email, password, registrationDate, userType);
   }
 
-  public Client(int id, String name, String email, LocalDateTime registrationDate) {
-    super(id, name, email, registrationDate);
+  public Client(int id, String name, String email, LocalDateTime registrationDate, UserType userType) {
+    super(id, name, email, registrationDate, userType);
   }
 }

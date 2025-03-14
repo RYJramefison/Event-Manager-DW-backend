@@ -1,16 +1,19 @@
+CREATE TYPE user_type_enum AS ENUM ('client', 'organizer', 'admin');
+
 -- ===========================
 -- 1. "User"s Table
 -- ===========================
 
-CREATE TABLE if not exists "User"
+CREATE TABLE IF NOT EXISTS "User"
 (
     id                SERIAL PRIMARY KEY,
-    name              VARCHAR(255)        NOT NULL,
-    email             VARCHAR(255) UNIQUE NOT NULL,
-    password          TEXT                NOT NULL,
-    registration_date TIMESTAMP DEFAULT NOW(),
-    type VARCHAR(50) CHECK (type IN ('client', 'organizer', 'admin')) DEFAULT 'client'
+    name              VARCHAR(255)                    NOT NULL,
+    email             VARCHAR(255) UNIQUE             NOT NULL,
+    password          TEXT                            NOT NULL,
+    registration_date TIMESTAMP      DEFAULT NOW(),
+    user_type         user_type_enum DEFAULT 'client' NOT NULL
 );
+
 
 -- ===========================
 -- 2. Separation (these three inherit from "User" to simplify management)

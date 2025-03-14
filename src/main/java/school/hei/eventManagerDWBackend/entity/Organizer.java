@@ -18,14 +18,15 @@ public class Organizer extends User {
       String email,
       String password,
       LocalDateTime registrationDate,
+      UserType userType,
       String company) {
-    super(id, name, email, password, registrationDate);
+    super(id, name, email, password, registrationDate, userType);
     this.company = company;
   }
 
   public Organizer(
-      int eventId, String eventName, String email, LocalDateTime registrationDate, String company) {
-    super(eventId, eventName, email, registrationDate);
+      int eventId, String eventName, String email, LocalDateTime registrationDate, UserType userType, String company) {
+    super(eventId, eventName, email, registrationDate, userType);
     this.company = company;
   }
 

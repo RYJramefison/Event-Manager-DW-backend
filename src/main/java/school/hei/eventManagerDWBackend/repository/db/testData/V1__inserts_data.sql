@@ -2,12 +2,12 @@
 -- 1. Insert Statements for the "User" Table
 -- ===========================
 
-INSERT INTO "User" (name, email, password) VALUES
-                                               ('Alice Johnson', 'alice.johnson@example.com', 'password123'),
-                                               ('Bob Smith', 'bob.smith@example.com', 'password123'),
-                                               ('Charlie Brown', 'charlie.brown@example.com', 'password123'),
-                                               ('Diana Prince', 'diana.prince@example.com', 'password123'),
-                                               ('Ethan Hunt', 'ethan.hunt@example.com', 'password123');
+INSERT INTO "User" (name, email, password, user_type) VALUES
+                                               ('Alice Johnson', 'alice.johnson@example.com', 'password123', 'client'),
+                                               ('Bob Smith', 'bob.smith@example.com', 'password123', 'admin'),
+                                               ('Charlie Brown', 'charlie.brown@example.com', 'password123', 'organizer'),
+                                               ('Diana Prince', 'diana.prince@example.com', 'password123', 'client'),
+                                               ('Ethan Hunt', 'ethan.hunt@example.com', 'password123', 'client');
 
 -- ===========================
 -- 2. Insert Statements for the "Admin" Table

@@ -2,6 +2,7 @@ package school.hei.eventManagerDWBackend.repository.dao;
 
 import org.springframework.stereotype.Repository;
 import school.hei.eventManagerDWBackend.entity.Organizer;
+import school.hei.eventManagerDWBackend.entity.UserType;
 import school.hei.eventManagerDWBackend.repository.db.DataSource;
 
 import java.sql.*;
@@ -13,35 +14,55 @@ import java.util.Optional;
 public class OrganizerDao implements CrudOperation<Organizer> {
 
   private final DataSource dataSource = new DataSource();
-
   @Override
   public void create(Organizer organizer) {
-    String sql = "INSERT INTO organizer (user_id, company) VALUES (?, ?)";
-    try (Connection connection = dataSource.getConnection();
-        PreparedStatement stmt =
-            connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-      stmt.setInt(1, organizer.getId());
-      stmt.setString(2, organizer.getCompany());
-      stmt.executeUpdate();
+    String insertUserSql = "INSERT INTO \"User\" (name, email, password, user_type) VALUES (?, ?, ?, ?::user_type_enum) RETURNING id";
+    String insertOrganizerSql = "INSERT INTO organizer (user_id, company) VALUES (?, ?)";
 
-      ResultSet rs = stmt.getGeneratedKeys();
-      if (rs.next()) {
-        organizer.setId(rs.getInt(1));
+    try (Connection conn = dataSource.getConnection()) {
+      conn.setAutoCommit(false);
+
+      try (PreparedStatement psUser = conn.prepareStatement(insertUserSql)) {
+        psUser.setString(1, organizer.getName());
+        psUser.setString(2, organizer.getEmail());
+        psUser.setString(3, organizer.getPassword());
+        psUser.setString(4, organizer.getUserType().name()); // Ajout du user_type
+        ResultSet rs = psUser.executeQuery();
+        if (rs.next()) {
+          int userId = rs.getInt(1);
+
+          try (PreparedStatement psOrganizer = conn.prepareStatement(insertOrganizerSql)) {
+            psOrganizer.setInt(1, userId);
+            psOrganizer.setString(2, organizer.getCompany());
+            psOrganizer.executeUpdate();
+          }
+
+          conn.commit();
+        } else {
+          throw new SQLException("Erreur lors de l'insertion de l'utilisateur");
+        }
+      } catch (SQLException e) {
+        conn.rollback();
+        throw e;
       }
     } catch (SQLException e) {
+      System.err.println("Erreur lors de la création de l'organizer : " + e.getMessage());
       throw new RuntimeException(e);
     }
   }
-
   @Override
   public void update(Organizer organizer) {
-    String sql = "UPDATE organizer SET company = ? WHERE id = ?";
+    String sql = "UPDATE organizer SET company = ?, user_type = ? WHERE id = ?";
+
     try (Connection connection = dataSource.getConnection();
-        PreparedStatement stmt = connection.prepareStatement(sql)) {
+         PreparedStatement stmt = connection.prepareStatement(sql)) {
       stmt.setString(1, organizer.getCompany());
-      stmt.setInt(2, organizer.getId());
+      stmt.setString(2, organizer.getUserType().name()); // Mise à jour du user_type
+      stmt.setInt(3, organizer.getId());
+
       stmt.executeUpdate();
     } catch (SQLException e) {
+      System.err.println("Erreur lors de la mise à jour de l'organizer : " + e.getMessage());
       throw new RuntimeException(e);
     }
   }
@@ -66,7 +87,7 @@ public class OrganizerDao implements CrudOperation<Organizer> {
   public List<Organizer> getAll(int page, int size) {
     List<Organizer> organizers = new ArrayList<>();
     String sql =
-        "SELECT * FROM organizer_user_view LIMIT ? OFFSET ?";
+        "SELECT * FROM organizer_user_view WHERE user_type = 'organizer' LIMIT ? OFFSET ?";
     try (Connection connection = dataSource.getConnection();
         PreparedStatement stmt = connection.prepareStatement(sql)) {
       stmt.setInt(1, size);
@@ -79,7 +100,9 @@ public class OrganizerDao implements CrudOperation<Organizer> {
                 rs.getString("organizer_name"),
                 rs.getString("email"),
                 rs.getTimestamp("registration_date").toLocalDateTime(),
-                rs.getString("company")));
+                UserType.valueOf(rs.getString("user_type")),
+                rs.getString("company")
+        ));
       }
     } catch (SQLException e) {
       throw new RuntimeException(e);
@@ -89,7 +112,7 @@ public class OrganizerDao implements CrudOperation<Organizer> {
 
   public List<Organizer> filter(List<Criteria> criterias) {
     List<Organizer> organizers = new ArrayList<>();
-    String sql = "SELECT * FROM organizer_user_view WHERE 1=1";
+    String sql = "SELECT * FROM organizer_user_view WHERE user_type = 'organizer' AND 1=1";
 
     for (Criteria criteria : criterias) {
       if ("name".equals(criteria.getColumn())){
@@ -109,6 +132,7 @@ public class OrganizerDao implements CrudOperation<Organizer> {
                         rs.getString("organizer_name"),
                         rs.getString("email"),
                         rs.getTimestamp("registration_date").toLocalDateTime(),
+                        UserType.valueOf(rs.getString("user_type")),
                         rs.getString("company")));
       }
     } catch (SQLException e) {
@@ -120,7 +144,7 @@ public class OrganizerDao implements CrudOperation<Organizer> {
   @Override
   public Optional<Organizer> getById(int id) {
     String sql =
-        "SELECT * FROM organizer_user_view WHERE organizer_id = ?";
+        "SELECT * FROM organizer_user_view WHERE user_type = 'organizer' AND organizer_id = ?";
     try (Connection connection = dataSource.getConnection();
         PreparedStatement stmt = connection.prepareStatement(sql)) {
       stmt.setInt(1, id);
@@ -132,6 +156,7 @@ public class OrganizerDao implements CrudOperation<Organizer> {
                 rs.getString("organizer_name"),
                 rs.getString("email"),
                 rs.getTimestamp("registration_date").toLocalDateTime(),
+                UserType.valueOf(rs.getString("user_type")),
                 rs.getString("company")));
       }
     } catch (SQLException e) {

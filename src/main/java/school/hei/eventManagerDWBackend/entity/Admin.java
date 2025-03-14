@@ -9,29 +9,12 @@ import java.time.LocalDateTime;
 @Setter
 @ToString(callSuper = true)
 public class Admin extends User {
-  private String adminName;
 
-  public Admin(
-      int id,
-      String name,
-      String email,
-      String password,
-      LocalDateTime registrationDate,
-      String adminName) {
-    super(id, name, email, password, registrationDate);
-    this.adminName = adminName;
+  public Admin(int id, String name, String email, String password, LocalDateTime registrationDate, UserType userType) {
+    super(id, name, email, password, registrationDate, userType);
   }
 
-    public Admin(int adminId, String adminName, String email, LocalDateTime registrationDate) {
-        super(adminId, adminName, email, registrationDate);
-        this.adminName = adminName;
-    }
-
-    public String getAdminName() {
-    return adminName;
-  }
-
-  public void setAdminName(String adminName) {
-    this.adminName = adminName;
+  public Admin(int id, String name, String email, LocalDateTime registrationDate, UserType userType) {
+    super(id, name, email, registrationDate, userType);
   }
 }
