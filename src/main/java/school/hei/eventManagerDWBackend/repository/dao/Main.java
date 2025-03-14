@@ -7,12 +7,12 @@ import java.util.Optional;
 
 public class Main {
   public static void main(String[] args) {
-    EventDao eventDao = new EventDao();
-    OrganizerDao organizerDao = new OrganizerDao();
-    Optional<Organizer> orgOpt = organizerDao.getById(2);
-
-    System.out.println("L'événement d'id 1 est : " + eventDao.getById(1));
-    System.out.println(eventDao.getAll(0, 2));
+//    EventDao eventDao = new EventDao();
+//    OrganizerDao organizerDao = new OrganizerDao();
+//    Optional<Organizer> orgOpt = organizerDao.getById(2);
+//
+//    System.out.println("L'événement d'id 1 est : " + eventDao.getById(1));
+//    System.out.println(eventDao.getAll(0, 2));
 //    if (orgOpt.isPresent()) {
 //      Organizer org = orgOpt.get();
 //      System.out.println("L'événement d'id 1 est : " + eventDao.getById(1));
@@ -49,5 +49,13 @@ public class Main {
 //    System.out.println(reservationDao.getById(1));
 //    System.out.println(reservationDao.getAll(0, 2));
 
+//    AdminDao adminDao = new AdminDao();
+//        adminDao.create(new Admin(21, "name", "email@mail","password", LocalDateTime.now(),
+//     UserType.admin));
+
+//    OrganizerDao organizerDao = new OrganizerDao();
+//    organizerDao.create(new Organizer(12, "name", "1email@email", "pass", LocalDateTime.now(), UserType.organizer,"company"));
+ClientDao clientDao = new ClientDao();
+clientDao.create(new Client(14, "client", "mailg@email", "passer", LocalDateTime.now(), UserType.client));
   }
 }

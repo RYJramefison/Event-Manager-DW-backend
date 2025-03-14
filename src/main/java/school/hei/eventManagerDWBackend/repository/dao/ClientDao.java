@@ -3,6 +3,7 @@ package school.hei.eventManagerDWBackend.repository.dao;
 import org.springframework.stereotype.Repository;
 import school.hei.eventManagerDWBackend.entity.Admin;
 import school.hei.eventManagerDWBackend.entity.Client;
+import school.hei.eventManagerDWBackend.entity.UserType;
 import school.hei.eventManagerDWBackend.repository.db.DataSource;
 
 import java.sql.*;
@@ -18,22 +19,41 @@ public class ClientDao implements CrudOperation<Client> {
 
   @Override
   public void create(Client client) {
-    String sql =
-        "INSERT INTO client (name, email, password, registration_date) VALUES (?, ?, ?, ?)";
-    try (Connection connection = dataSource.getConnection();
-        PreparedStatement stmt =
-            connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-      stmt.setString(1, client.getName());
-      stmt.setString(2, client.getEmail());
-      stmt.setString(3, client.getPassword());
-      stmt.setTimestamp(4, Timestamp.valueOf(client.getRegistrationDate()));
-      stmt.executeUpdate();
+    String insertUserSql = "INSERT INTO \"User\" (name, email, password, user_type) VALUES (?, ?, ?, ?::user_type_enum) RETURNING id";
+    String insertClientSql = "INSERT INTO client (user_id) VALUES (?)";
 
-      ResultSet rs = stmt.getGeneratedKeys();
-      if (rs.next()) {
-        client.setId(rs.getInt(1));
+    try (Connection conn = dataSource.getConnection()) {
+      conn.setAutoCommit(false);
+
+      try (PreparedStatement psUser = conn.prepareStatement(insertUserSql)) {
+        psUser.setString(1, client.getName());
+        psUser.setString(2, client.getEmail());
+        psUser.setString(3, client.getPassword());
+        psUser.setString(4, client.getUserType().name());
+
+        try (ResultSet rs = psUser.executeQuery()) {
+          if (rs.next()) {
+            int userId = rs.getInt(1);
+
+            try (PreparedStatement psClient = conn.prepareStatement(insertClientSql)) {
+              psClient.setInt(1, userId);
+              psClient.executeUpdate();
+            }
+
+            conn.commit();
+          } else {
+            throw new SQLException("Erreur lors de l'insertion de l'utilisateur");
+          }
+        }
+      } catch (SQLException e) {
+        conn.rollback();
+        System.err.println("Erreur SQL : " + e.getMessage());
+        e.printStackTrace();
+        throw e;
       }
     } catch (SQLException e) {
+      System.err.println("Erreur lors de la création du client : " + e.getMessage());
+      e.printStackTrace();
       throw new RuntimeException(e);
     }
   }
@@ -41,19 +61,24 @@ public class ClientDao implements CrudOperation<Client> {
   @Override
   public void update(Client client) {
     String sql =
-        "UPDATE client SET name = ?, email = ?, password = ?, registration_date = ? WHERE id = ?";
+        "UPDATE \"User\" SET name = ?, email = ?, user_type = ? WHERE user_type = 'client' id = ?";
+
     try (Connection connection = dataSource.getConnection();
-        PreparedStatement stmt = connection.prepareStatement(sql)) {
+         PreparedStatement stmt = connection.prepareStatement(sql)) {
       stmt.setString(1, client.getName());
       stmt.setString(2, client.getEmail());
       stmt.setString(3, client.getPassword());
       stmt.setTimestamp(4, Timestamp.valueOf(client.getRegistrationDate()));
-      stmt.setInt(5, client.getId());
+      stmt.setString(5, client.getUserType().name());
+      stmt.setInt(6, client.getId());
+
       stmt.executeUpdate();
     } catch (SQLException e) {
+      System.err.println("Erreur lors de la mise à jour du client : " + e.getMessage());
       throw new RuntimeException(e);
     }
   }
+
 
   public void deleteById(int id) {
     String sql = "DELETE FROM Client WHERE id = ?";
@@ -62,9 +87,9 @@ public class ClientDao implements CrudOperation<Client> {
       stmt.setInt(1, id);
       int rowsAffected = stmt.executeUpdate();
       if (rowsAffected > 0) {
-        System.out.println("Événement supprimé avec succès !");
+        System.out.println("client supprimé avec succès !");
       } else {
-        System.out.println("Aucun événement trouvé avec cet ID.");
+        System.out.println("Aucun Client trouvé avec cet ID.");
       }
     } catch (SQLException e) {
       e.printStackTrace();
@@ -75,7 +100,7 @@ public class ClientDao implements CrudOperation<Client> {
   public List<Client> getAll(int page, int size) {
     List<Client> clients = new ArrayList<>();
     String sql =
-        "SELECT * FROM client_user_view LIMIT ? OFFSET ?";
+        "SELECT * FROM client_user_view WHERE user_type = 'client' LIMIT ? OFFSET ?";
     try (Connection connection = dataSource.getConnection();
         PreparedStatement stmt = connection.prepareStatement(sql)) {
       stmt.setInt(1, size);
@@ -87,7 +112,9 @@ public class ClientDao implements CrudOperation<Client> {
                 rs.getInt("client_id"),
                 rs.getString("client_name"),
                 rs.getString("email"),
-                rs.getTimestamp("registration_date").toLocalDateTime()));
+                rs.getTimestamp("registration_date").toLocalDateTime(),
+                UserType.valueOf(rs.getString("user_type"))
+                ));
       }
     } catch (SQLException e) {
       throw new RuntimeException(e);
@@ -97,8 +124,8 @@ public class ClientDao implements CrudOperation<Client> {
 
   public List<Client> filter(String criteria){
     List<Client> clients = new ArrayList<>();
-    String sql = "SELECT client_id, client_name, email, registration_date FROM" +
-            " client_user_view WHERE client_name ILIKE ?";
+    String sql = "SELECT client_id, client_name, email, registration_date,user_type FROM" +
+            " client_user_view WHERE user_type = 'client' AND client_name ILIKE ?";
 
     try (Connection connection = dataSource.getConnection();
          PreparedStatement pstm = connection.prepareStatement(sql)) {
@@ -110,7 +137,9 @@ public class ClientDao implements CrudOperation<Client> {
                   res.getInt("client_id"),
                   res.getString("client_name"),
                   res.getString("email"),
-                  res.getTimestamp("registration_date").toLocalDateTime());
+                  res.getTimestamp("registration_date").toLocalDateTime(),
+                  UserType.valueOf(res.getString("user_type"))
+                  );
           clients.add(client);
         }
         return clients;
@@ -124,7 +153,7 @@ public class ClientDao implements CrudOperation<Client> {
   @Override
   public Optional<Client> getById(int id) {
     String sql =
-        "SELECT * FROM client_user_view WHERE client_id = ?";
+        "SELECT * FROM client_user_view WHERE user_type = 'client' AND client_id = ?";
     try (Connection connection = dataSource.getConnection();
         PreparedStatement stmt = connection.prepareStatement(sql)) {
       stmt.setInt(1, id);
@@ -135,7 +164,9 @@ public class ClientDao implements CrudOperation<Client> {
                 rs.getInt("client_id"),
                 rs.getString("client_name"),
                 rs.getString("email"),
-                rs.getTimestamp("registration_date").toLocalDateTime()));
+                rs.getTimestamp("registration_date").toLocalDateTime(),
+                UserType.valueOf(rs.getString("user_type"))
+        ));
       }
     } catch (SQLException e) {
       throw new RuntimeException(e);
