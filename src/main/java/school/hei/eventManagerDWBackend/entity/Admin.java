@@ -17,4 +17,8 @@ public class Admin extends User {
   public Admin(int id, String name, String email, LocalDateTime registrationDate, UserType userType) {
     super(id, name, email, registrationDate, userType);
   }
+
+  public Admin() {
+    super();
+  }
 }

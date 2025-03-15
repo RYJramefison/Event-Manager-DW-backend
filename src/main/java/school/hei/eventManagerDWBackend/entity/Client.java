@@ -19,4 +19,8 @@ public class Client extends User {
   public Client(int id, String name, String email, LocalDateTime registrationDate, UserType userType) {
     super(id, name, email, registrationDate, userType);
   }
+
+  public Client() {
+    super();
+  }
 }

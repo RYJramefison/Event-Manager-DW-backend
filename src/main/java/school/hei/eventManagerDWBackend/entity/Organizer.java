@@ -30,6 +30,10 @@ public class Organizer extends User {
     this.company = company;
   }
 
+  public Organizer() {
+    super();
+  }
+
   public String getCompany() {
     return company;
   }

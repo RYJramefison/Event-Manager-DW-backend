@@ -30,7 +30,11 @@ public abstract class User {
     this.userType = userType;
   }
 
-    public int getId() {
+  public User() {
+
+  }
+
+  public int getId() {
     return id;
   }
 
