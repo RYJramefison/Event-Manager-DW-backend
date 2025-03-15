@@ -50,22 +50,39 @@ public class OrganizerDao implements CrudOperation<Organizer> {
       throw new RuntimeException(e);
     }
   }
+
   @Override
   public void update(Organizer organizer) {
-    String sql = "UPDATE organizer SET company = ?, user_type = ? WHERE id = ?";
+    String updateUserSql = "UPDATE \"User\" SET name = ?, password = ? WHERE id = ? AND user_type = 'organizer'";
+    String updateOrganizerSql = "UPDATE Organizer SET company = ? WHERE user_id = ?";
 
-    try (Connection connection = dataSource.getConnection();
-         PreparedStatement stmt = connection.prepareStatement(sql)) {
-      stmt.setString(1, organizer.getCompany());
-      stmt.setString(2, organizer.getUserType().name()); // Mise à jour du user_type
-      stmt.setInt(3, organizer.getId());
+    try (Connection connection = dataSource.getConnection()) {
+      connection.setAutoCommit(false);
 
-      stmt.executeUpdate();
+      try (PreparedStatement userStmt = connection.prepareStatement(updateUserSql);
+           PreparedStatement organizerStmt = connection.prepareStatement(updateOrganizerSql)) {
+
+        // Mise à jour de "User"
+        userStmt.setString(1, organizer.getName());
+        userStmt.setString(2, organizer.getPassword());
+        userStmt.setInt(3, organizer.getId());
+        userStmt.executeUpdate();
+
+        // Mise à jour de "Organizer"
+        organizerStmt.setString(1, organizer.getCompany());
+        organizerStmt.setInt(2, organizer.getId());
+        organizerStmt.executeUpdate();
+
+        connection.commit();
+      } catch (SQLException e) {
+        connection.rollback();
+        throw new RuntimeException("Erreur lors de la mise à jour de l'organizer", e);
+      }
     } catch (SQLException e) {
-      System.err.println("Erreur lors de la mise à jour de l'organizer : " + e.getMessage());
-      throw new RuntimeException(e);
+      throw new RuntimeException("Problème de connexion à la base de données", e);
     }
   }
+
 
   public void deleteById(int id) {
     String sql = "DELETE FROM Organizer WHERE id = ?";

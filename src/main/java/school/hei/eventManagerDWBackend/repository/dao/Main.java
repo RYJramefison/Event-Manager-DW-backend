@@ -56,6 +56,6 @@ public class Main {
 //    OrganizerDao organizerDao = new OrganizerDao();
 //    organizerDao.create(new Organizer(12, "name", "1email@email", "pass", LocalDateTime.now(), UserType.organizer,"company"));
 ClientDao clientDao = new ClientDao();
-clientDao.create(new Client(18, "client", "mail33g@email", "passer", LocalDateTime.now(), UserType.client));
+clientDao.update(new Client(1, "client", "mailjug@email", "passer", LocalDateTime.now(), UserType.client));
   }
 }

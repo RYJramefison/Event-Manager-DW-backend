@@ -57,20 +57,16 @@ public class ClientDao implements CrudOperation<Client> {
       throw new RuntimeException(e);
     }
   }
-
   @Override
   public void update(Client client) {
     String sql =
-        "UPDATE \"User\" SET name = ?, email = ?, user_type = ? WHERE user_type = 'client' id = ?";
+            "UPDATE \"User\" SET name = ?, password = ? WHERE id = ? AND user_type = 'client'";
 
     try (Connection connection = dataSource.getConnection();
          PreparedStatement stmt = connection.prepareStatement(sql)) {
       stmt.setString(1, client.getName());
-      stmt.setString(2, client.getEmail());
-      stmt.setString(3, client.getPassword());
-      stmt.setTimestamp(4, Timestamp.valueOf(client.getRegistrationDate()));
-      stmt.setString(5, client.getUserType().name());
-      stmt.setInt(6, client.getId());
+      stmt.setString(2, client.getPassword());
+      stmt.setInt(3, client.getId());
 
       stmt.executeUpdate();
     } catch (SQLException e) {

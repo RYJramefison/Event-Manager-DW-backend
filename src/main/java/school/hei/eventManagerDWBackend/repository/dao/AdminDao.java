@@ -58,13 +58,12 @@ public class AdminDao implements CrudOperation<Admin> {
 
   @Override
   public void update(Admin entity) {
-    String sql = "UPDATE \"User\" SET name = ?, email = ?, user_type = ? WHERE user_type = 'admin' id = ?";
+    String sql = "UPDATE \"User\" SET name = ?, password = ? WHERE user_type = 'admin' AND id = ?";
     try (Connection conn = dataSource.getConnection();
          PreparedStatement ps = conn.prepareStatement(sql)) {
       ps.setString(1, entity.getName());
-      ps.setString(2, entity.getEmail());
-      ps.setString(3, entity.getUserType().name());
-      ps.setInt(4, entity.getId());
+      ps.setString(2, entity.getPassword());
+      ps.setInt(3, entity.getId());
       int rowsAffected = ps.executeUpdate();
       if (rowsAffected == 0) {
         throw new SQLException("Aucun utilisateur trouvé avec l'ID: " + entity.getId());
