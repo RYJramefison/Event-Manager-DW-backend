@@ -1,0 +1,35 @@
+package school.hei.eventManagerDWBackend.service;
+
+import lombok.AllArgsConstructor;
+import org.springframework.stereotype.Service;
+import school.hei.eventManagerDWBackend.entity.User;
+import school.hei.eventManagerDWBackend.repository.dao.UserDao;
+
+import java.util.List;
+import java.util.Optional;
+
+@AllArgsConstructor
+@Service
+public class UserService {
+    private final UserDao userDao;
+
+    public List<User> getAllUsers(int page, int size) {
+        return userDao.getAll(page, size);
+    }
+
+    public Optional<User> getUserById(int id) {
+        return userDao.getById(id);
+    }
+
+    public void createUser(User user) {
+        userDao.create(user);
+    }
+
+    public void updateUser(User user) {
+        userDao.update(user);
+    }
+
+    public void deleteUserById(int id) {
+        userDao.deleteById(id);
+    }
+}
