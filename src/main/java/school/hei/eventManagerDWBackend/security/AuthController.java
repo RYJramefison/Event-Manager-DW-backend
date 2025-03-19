@@ -27,8 +27,8 @@ public class AuthController {
 
     @PostMapping("/login")
     public Map<String, String> login(@RequestBody Map<String, String> request) {
-        String username = request.get("fetra");
-        String password = request.get("fetra");
+        String username = request.get("username");
+        String password = request.get("password");
 
         // Vérifier si l'utilisateur existe dans la "base de données"
         if (users.containsKey(username) && users.get(username).equals(password)) {
