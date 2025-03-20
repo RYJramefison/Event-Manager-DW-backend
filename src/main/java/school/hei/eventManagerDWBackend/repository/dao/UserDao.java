@@ -89,6 +89,45 @@ public class UserDao implements CrudOperation<User> {
         return users;
     }
 
+    public List<User> filter(List<Criteria> criterias) {
+        List<User> users = new ArrayList<>();
+        String sql =
+                "SELECT id, name, email, registration_date, user_type FROM \"User\" WHERE 1=1";
+
+        for (Criteria criteria : criterias) {
+            if ("name".equals(criteria.getColumn())) {
+                sql += " and name ilike '%" + criteria.getValue().toString() + "%'";
+            } else if ("registrationDate".equals(criteria.getColumn())) {
+                sql += " and registration_date =" + criteria.getValue().toString();}
+            else if ("registrationDateMin".equals(criteria.getColumn())) {
+                sql += " and registration_date >=" + criteria.getValue().toString() ;}
+            else if ("registrationDateMax".equals(criteria.getColumn())) {
+                sql += " and registration_date <=" + criteria.getValue().toString();}
+            else if ("email".equals(criteria.getColumn())) {
+                sql += " and email ilike '%" + criteria.getValue().toString() + "%'";
+            }else if ("userType".equals(criteria.getColumn())) {
+                sql += " and user_type =" + criteria.getValue().toString() ;
+            }
+        }
+        try (Connection connection = dataSource.getConnection();
+             Statement stmt = connection.createStatement()) {
+
+            ResultSet rs = stmt.executeQuery(sql);
+            while (rs.next()) {
+                users.add(new User(
+                        rs.getInt("id"),
+                        rs.getString("name"),
+                        rs.getString("email"),
+                        rs.getTimestamp("registration_date").toLocalDateTime(),
+                        UserType.valueOf(rs.getString("user_type"))
+                ));
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return users;
+    }
+
     @Override
     public Optional<User> getById(int id) {
     String sql =

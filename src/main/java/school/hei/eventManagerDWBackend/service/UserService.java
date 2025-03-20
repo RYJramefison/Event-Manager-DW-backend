@@ -3,6 +3,7 @@ package school.hei.eventManagerDWBackend.service;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import school.hei.eventManagerDWBackend.entity.User;
+import school.hei.eventManagerDWBackend.repository.dao.Criteria;
 import school.hei.eventManagerDWBackend.repository.dao.UserDao;
 
 import java.util.List;
@@ -15,6 +16,10 @@ public class UserService {
 
     public List<User> getAllUsers(int page, int size) {
         return userDao.getAll(page, size);
+    }
+
+    public List<User> filter(List<Criteria>  criteria) {
+        return userDao.filter(criteria);
     }
 
     public Optional<User> getUserById(int id) {
