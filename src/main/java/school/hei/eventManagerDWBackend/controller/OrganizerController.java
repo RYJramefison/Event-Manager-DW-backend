@@ -14,6 +14,7 @@ import java.util.Optional;
 @AllArgsConstructor
 @RestController
 @RequestMapping("/api/organizer")
+@CrossOrigin(origins = "http://localhost:3000")
 public class OrganizerController {
     private final OrganizerService adminService;
 
