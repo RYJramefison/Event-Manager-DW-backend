@@ -53,40 +53,46 @@
 		<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
 		<version>2.2.0</version>
 	</dependency>
-
-	<!-- Spring Boot Security -->
 	<dependency>
-		<groupId>org.springframework.boot</groupId>
-		<artifactId>spring-boot-starter-security</artifactId>
+		<groupId>org.postgresql</groupId>
+		<artifactId>postgresql</artifactId>
+		<version>42.7.4</version>
 	</dependency>
 
-	<!-- JWT (JSON Web Token) -->
-	<dependency>
-		<groupId>io.jsonwebtoken</groupId>
-		<artifactId>jjwt</artifactId>
-		<version>0.9.1</version>
-	</dependency>
+	<!--	&lt;!&ndash; Spring Boot Security &ndash;&gt;-->
+<!--	<dependency>-->
+<!--		<groupId>org.springframework.boot</groupId>-->
+<!--		<artifactId>spring-boot-starter-security</artifactId>-->
+<!--	</dependency>-->
 
-	<!-- JWT API -->
-	<dependency>
-		<groupId>io.jsonwebtoken</groupId>
-		<artifactId>jjwt-api</artifactId>
-		<version>0.11.5</version>
-	</dependency>
+<!--	&lt;!&ndash; JWT (JSON Web Token) &ndash;&gt;-->
+<!--	<dependency>-->
+<!--		<groupId>io.jsonwebtoken</groupId>-->
+<!--		<artifactId>jjwt</artifactId>-->
+<!--		<version>0.9.1</version>-->
+<!--	</dependency>-->
 
-	<!-- JWT Implementation -->
-	<dependency>
-		<groupId>io.jsonwebtoken</groupId>
-		<artifactId>jjwt-impl</artifactId>
-		<version>0.11.5</version>
-	</dependency>
+<!--	&lt;!&ndash; JWT API &ndash;&gt;-->
+<!--	<dependency>-->
+<!--		<groupId>io.jsonwebtoken</groupId>-->
+<!--		<artifactId>jjwt-api</artifactId>-->
+<!--		<version>0.11.5</version>-->
+<!--	</dependency>-->
 
-	<!-- JWT Jackson (pour gérer les dates dans les JWT) -->
-	<dependency>
-		<groupId>io.jsonwebtoken</groupId>
-		<artifactId>jjwt-jackson</artifactId>
-		<version>0.11.5</version>
-	</dependency>
+<!--	&lt;!&ndash; JWT Implementation &ndash;&gt;-->
+<!--	<dependency>-->
+<!--		<groupId>io.jsonwebtoken</groupId>-->
+<!--		<artifactId>jjwt-impl</artifactId>-->
+<!--		<version>0.11.5</version>-->
+<!--	</dependency>-->
+
+<!--	&lt;!&ndash; JWT Jackson (pour gérer les dates dans les JWT) &ndash;&gt;-->
+<!--	<dependency>-->
+<!--		<groupId>io.jsonwebtoken</groupId>-->
+<!--		<artifactId>jjwt-jackson</artifactId>-->
+<!--		<version>0.11.5</version>-->
+<!--	</dependency>-->
+
 </dependencies>
 
 <build>
