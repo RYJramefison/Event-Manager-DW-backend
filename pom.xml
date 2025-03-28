@@ -59,7 +59,8 @@
 		<version>42.7.4</version>
 	</dependency>
 
-	<!--	&lt;!&ndash; Spring Boot Security &ndash;&gt;-->
+
+<!--	&lt;!&ndash; Spring Boot Security &ndash;&gt;-->
 <!--	<dependency>-->
 <!--		<groupId>org.springframework.boot</groupId>-->
 <!--		<artifactId>spring-boot-starter-security</artifactId>-->
@@ -86,13 +87,13 @@
 <!--		<version>0.11.5</version>-->
 <!--	</dependency>-->
 
+
 <!--	&lt;!&ndash; JWT Jackson (pour gérer les dates dans les JWT) &ndash;&gt;-->
 <!--	<dependency>-->
 <!--		<groupId>io.jsonwebtoken</groupId>-->
 <!--		<artifactId>jjwt-jackson</artifactId>-->
 <!--		<version>0.11.5</version>-->
 <!--	</dependency>-->
-
 </dependencies>
 
 <build>
