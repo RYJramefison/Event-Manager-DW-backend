@@ -17,17 +17,42 @@ public class UserDao implements CrudOperation<User> {
 
     @Override
     public void create(User user) {
-    String sql = "INSERT INTO \"User\" (name, email, password) VALUES (?,?,?)";
+    String sql = "INSERT INTO \"User\" (name, email, password, user_type) VALUES (?,?,?,?::user_type_enum)";
         try (Connection connection = dataSource.getConnection();
              PreparedStatement stmt = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             stmt.setString(1, user.getName());
             stmt.setString(2, user.getEmail());
             stmt.setString(3, user.getPassword());
+            stmt.setString(4, user.getUserType().name());
             stmt.executeUpdate();
 
             ResultSet rs = stmt.getGeneratedKeys();
             if (rs.next()) {
                 user.setId(rs.getInt(1));
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public int createAndGetId(User user) {
+        String sql = "INSERT INTO \"User\" (name, email, password, user_type) VALUES (?,?,?,?::user_type_enum)";
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement stmt = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            stmt.setString(1, user.getName());
+            stmt.setString(2, user.getEmail());
+            stmt.setString(3, user.getPassword());
+            stmt.setString(4, user.getUserType().name());
+            stmt.executeUpdate();
+
+            try (ResultSet rs = stmt.getGeneratedKeys()) {
+                if (rs.next()) {
+                    int generatedId = rs.getInt(1);
+                    user.setId(generatedId);
+                    return generatedId;
+                } else {
+                    throw new RuntimeException("Aucun ID généré lors de l'insertion de l'utilisateur.");
+                }
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
