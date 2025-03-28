@@ -1,13 +1,14 @@
 package school.hei.eventManagerDWBackend.repository.dao;
 
 import org.springframework.stereotype.Repository;
-import school.hei.eventManagerDWBackend.entity.Admin;
 import school.hei.eventManagerDWBackend.entity.Client;
 import school.hei.eventManagerDWBackend.entity.UserType;
 import school.hei.eventManagerDWBackend.repository.db.DataSource;
 
-import java.sql.*;
-import java.time.LocalDateTime;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -19,41 +20,17 @@ public class ClientDao implements CrudOperation<Client> {
 
   @Override
   public void create(Client client) {
-    String insertUserSql = "INSERT INTO \"User\" (name, email, password, user_type) VALUES (?, ?, ?, ?::user_type_enum) RETURNING id";
     String insertClientSql = "INSERT INTO client (user_id) VALUES (?)";
 
     try (Connection conn = dataSource.getConnection()) {
-      conn.setAutoCommit(false);
+      UserDao subjectUser = new UserDao();
+      int userId = subjectUser.createAndGetId(client);
 
-      try (PreparedStatement psUser = conn.prepareStatement(insertUserSql)) {
-        psUser.setString(1, client.getName());
-        psUser.setString(2, client.getEmail());
-        psUser.setString(3, client.getPassword());
-        psUser.setString(4, client.getUserType().name());
-
-        try (ResultSet rs = psUser.executeQuery()) {
-          if (rs.next()) {
-            int userId = rs.getInt(1);
-
-            try (PreparedStatement psClient = conn.prepareStatement(insertClientSql)) {
-              psClient.setInt(1, userId);
-              psClient.executeUpdate();
-            }
-
-            conn.commit();
-          } else {
-            throw new SQLException("Erreur lors de l'insertion de l'utilisateur");
-          }
-        }
-      } catch (SQLException e) {
-        conn.rollback();
-        System.err.println("Erreur SQL : " + e.getMessage());
-        e.printStackTrace();
-        throw e;
+      try (PreparedStatement psClient = conn.prepareStatement(insertClientSql)) {
+        psClient.setInt(1, userId);
+        psClient.executeUpdate();
       }
     } catch (SQLException e) {
-      System.err.println("Erreur lors de la création du client : " + e.getMessage());
-      e.printStackTrace();
       throw new RuntimeException(e);
     }
   }
