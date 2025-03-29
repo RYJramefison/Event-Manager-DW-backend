@@ -2,9 +2,10 @@ package school.hei.eventManagerDWBackend;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.context.annotation.ComponentScan;
 
-@SpringBootApplication(scanBasePackages = "school.hei.eventManagerDWBackend")
+@SpringBootApplication(scanBasePackages = "school.hei.eventManagerDWBackend", exclude = { SecurityAutoConfiguration.class })
 @ComponentScan({"school.hei.eventManagerDWBackend.controller","school.hei.eventManagerDWBackend.entity", "school.hei.eventManagerDWBackend.repository.dao","school.hei.eventManagerDWBackend.service"})
 public class EventManagerDwBackendApplication {
 
