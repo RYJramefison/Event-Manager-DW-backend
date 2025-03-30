@@ -1,8 +1,9 @@
 -- View for the table Admin
 CREATE VIEW admin_user_view AS
-SELECT a.id AS admin_id,
+SELECT a.id   AS admin_id,
        u.name AS admin_name,
        u.email,
+       u.password,
        u.registration_date,
        u.user_type
 FROM admin a
@@ -11,9 +12,10 @@ FROM admin a
 
 -- View for table Client
 CREATE VIEW client_user_view AS
-SELECT c.id AS client_id,
+SELECT c.id   AS client_id,
        u.name AS client_name,
        u.email,
+       u.password,
        u.registration_date,
        u.user_type
 FROM client c
@@ -21,6 +23,12 @@ FROM client c
 
 -- View for the table Organizer
 CREATE VIEW organizer_user_view AS
-SELECT o.id AS organizer_id, u.name AS organizer_name, u.email, u.registration_date, u.user_type, o.company
+SELECT o.id   AS organizer_id,
+       u.name AS organizer_name,
+       u.email,
+       u.password,
+       u.registration_date,
+       u.user_type,
+       o.company
 FROM organizer o
          JOIN "User" u ON o.user_id = u.id;

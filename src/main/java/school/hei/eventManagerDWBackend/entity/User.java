@@ -22,14 +22,6 @@ public class User {
     this.userType = userType;
   }
 
-  public User(int id, String name, String email, LocalDateTime registrationDate, UserType userType) {
-    this.id = id;
-    this.name = name;
-    this.email = email;
-    this.registrationDate = registrationDate;
-    this.userType = userType;
-  }
-
   public User() {
 
   }

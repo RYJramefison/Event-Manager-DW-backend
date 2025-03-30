@@ -104,6 +104,7 @@ public class UserDao implements CrudOperation<User> {
                         rs.getInt("id"),
                         rs.getString("name"),
                         rs.getString("email"),
+                        rs.getString("password"),
                         rs.getTimestamp("registration_date").toLocalDateTime(),
                         UserType.valueOf(rs.getString("user_type"))
                 ));
@@ -143,6 +144,7 @@ public class UserDao implements CrudOperation<User> {
                         rs.getInt("id"),
                         rs.getString("name"),
                         rs.getString("email"),
+                        rs.getString("password"),
                         rs.getTimestamp("registration_date").toLocalDateTime(),
                         UserType.valueOf(rs.getString("user_type"))
                 ));
@@ -166,6 +168,7 @@ public class UserDao implements CrudOperation<User> {
                         rs.getInt("id"),
                         rs.getString("name"),
                         rs.getString("email"),
+                        rs.getString("password"),
                         rs.getTimestamp("registration_date").toLocalDateTime(),
                         UserType.valueOf(rs.getString("user_type"))
                 ));

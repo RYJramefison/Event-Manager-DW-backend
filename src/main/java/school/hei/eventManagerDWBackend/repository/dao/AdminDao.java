@@ -106,6 +106,7 @@ public class AdminDao implements CrudOperation<Admin> {
                 rs.getInt("admin_id"),
                 rs.getString("admin_name"),
                 rs.getString("email"),
+                rs.getString("password"),
                 rs.getTimestamp("registration_date").toLocalDateTime(),
                 UserType.valueOf(rs.getString("user_type"))
         );
@@ -135,6 +136,7 @@ public class AdminDao implements CrudOperation<Admin> {
                      res.getInt("admin_id"),
                      res.getString("admin_name"),
                      res.getString("email"),
+                     res.getString("password"),
                      res.getTimestamp("registration_date").toLocalDateTime(),
                      UserType.valueOf(res.getString("user_type")));
              admins.add(admin);
@@ -162,6 +164,7 @@ public class AdminDao implements CrudOperation<Admin> {
                     rs.getInt("admin_id"),
                     rs.getString("admin_name"),
                     rs.getString("email"),
+                    rs.getString("password"),
                     rs.getTimestamp("registration_date").toLocalDateTime(),
                     UserType.valueOf(rs.getString("user_type")));
         return Optional.of(admin);

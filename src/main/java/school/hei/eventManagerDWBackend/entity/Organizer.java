@@ -24,12 +24,6 @@ public class Organizer extends User {
     this.company = company;
   }
 
-  public Organizer(
-      int eventId, String eventName, String email, LocalDateTime registrationDate, UserType userType, String company) {
-    super(eventId, eventName, email, registrationDate, userType);
-    this.company = company;
-  }
-
   public Organizer() {
     super();
   }

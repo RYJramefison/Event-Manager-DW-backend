@@ -57,8 +57,8 @@ public class Main {
 //    organizerDao.create(new Organizer(12, "name", "1email@email", "pass", LocalDateTime.now(), UserType.organizer,"company"));
 ClientDao clientDao = new ClientDao();
     System.out.println(clientDao.getById(1));
-
-clientDao.update(new Client(1, "client", "test@email.com", "test", LocalDateTime.now(), UserType.admin));
+clientDao.create(new Client(1,"name", "fsfd@mail.com", "password", LocalDateTime.now(),UserType.client));
+//clientDao.update(new Client(1, "client", "test@email.com", "test", LocalDateTime.now(), UserType.admin));
 
   UserDao userDao = new UserDao();
     System.out.println(userDao.getById(33));

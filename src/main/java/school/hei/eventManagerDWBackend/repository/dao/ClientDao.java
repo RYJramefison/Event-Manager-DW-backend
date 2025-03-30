@@ -85,6 +85,7 @@ public class ClientDao implements CrudOperation<Client> {
                 rs.getInt("client_id"),
                 rs.getString("client_name"),
                 rs.getString("email"),
+                rs.getString("password"),
                 rs.getTimestamp("registration_date").toLocalDateTime(),
                 UserType.valueOf(rs.getString("user_type"))
                 ));
@@ -110,6 +111,7 @@ public class ClientDao implements CrudOperation<Client> {
                   res.getInt("client_id"),
                   res.getString("client_name"),
                   res.getString("email"),
+                  res.getString("password"),
                   res.getTimestamp("registration_date").toLocalDateTime(),
                   UserType.valueOf(res.getString("user_type"))
                   );
@@ -137,6 +139,7 @@ public class ClientDao implements CrudOperation<Client> {
                 rs.getInt("client_id"),
                 rs.getString("client_name"),
                 rs.getString("email"),
+                rs.getString("password"),
                 rs.getTimestamp("registration_date").toLocalDateTime(),
                 UserType.valueOf(rs.getString("user_type"))
         ));

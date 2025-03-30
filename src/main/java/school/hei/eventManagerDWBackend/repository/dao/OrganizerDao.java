@@ -116,6 +116,7 @@ public class OrganizerDao implements CrudOperation<Organizer> {
                 rs.getInt("organizer_id"),
                 rs.getString("organizer_name"),
                 rs.getString("email"),
+                rs.getString("password"),
                 rs.getTimestamp("registration_date").toLocalDateTime(),
                 UserType.valueOf(rs.getString("user_type")),
                 rs.getString("company")
@@ -148,6 +149,7 @@ public class OrganizerDao implements CrudOperation<Organizer> {
                         rs.getInt("organizer_id"),
                         rs.getString("organizer_name"),
                         rs.getString("email"),
+                        rs.getString("password"),
                         rs.getTimestamp("registration_date").toLocalDateTime(),
                         UserType.valueOf(rs.getString("user_type")),
                         rs.getString("company")));
@@ -172,6 +174,7 @@ public class OrganizerDao implements CrudOperation<Organizer> {
                 rs.getInt("organizer_id"),
                 rs.getString("organizer_name"),
                 rs.getString("email"),
+                rs.getString("password"),
                 rs.getTimestamp("registration_date").toLocalDateTime(),
                 UserType.valueOf(rs.getString("user_type")),
                 rs.getString("company")));
