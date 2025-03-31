@@ -4,6 +4,7 @@ import org.springframework.stereotype.Repository;
 import school.hei.eventManagerDWBackend.entity.User;
 import school.hei.eventManagerDWBackend.entity.UserType;
 import school.hei.eventManagerDWBackend.repository.db.DataSource;
+import school.hei.eventManagerDWBackend.utils.PasswordEncoder;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -17,12 +18,14 @@ public class UserDao implements CrudOperation<User> {
 
     @Override
     public void create(User user) {
-    String sql = "INSERT INTO \"User\" (name, email, password, user_type) VALUES (?,?,?,?::user_type_enum)";
+        String hashedPassword = PasswordEncoder.encode(user.getPassword());
+
+        String sql = "INSERT INTO \"User\" (name, email, password, user_type) VALUES (?,?,?,?::user_type_enum)";
         try (Connection connection = dataSource.getConnection();
              PreparedStatement stmt = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             stmt.setString(1, user.getName());
             stmt.setString(2, user.getEmail());
-            stmt.setString(3, user.getPassword());
+            stmt.setString(3, hashedPassword);
             stmt.setString(4, user.getUserType().name());
             stmt.executeUpdate();
 
@@ -35,13 +38,41 @@ public class UserDao implements CrudOperation<User> {
         }
     }
 
+    public Optional<User> findByEmail(String email) {
+        String sql = "SELECT id, name, email, password, registration_date, user_type " +
+                     "FROM \"User\" WHERE email = ?";
+
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement stmt = connection.prepareStatement(sql)) {
+
+            stmt.setString(1, email);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                return Optional.of(new User(
+                        rs.getInt("id"),
+                        rs.getString("name"),
+                        rs.getString("email"),
+                        rs.getString("password"),
+                        rs.getTimestamp("registration_date").toLocalDateTime(),
+                        UserType.valueOf(rs.getString("user_type"))
+                ));
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return Optional.empty();
+    }
+
     public int createAndGetId(User user) {
+        String hashedPassword = PasswordEncoder.encode(user.getPassword());
+
         String sql = "INSERT INTO \"User\" (name, email, password, user_type) VALUES (?,?,?,?::user_type_enum)";
         try (Connection connection = dataSource.getConnection();
              PreparedStatement stmt = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             stmt.setString(1, user.getName());
             stmt.setString(2, user.getEmail());
-            stmt.setString(3, user.getPassword());
+            stmt.setString(3, hashedPassword);
             stmt.setString(4, user.getUserType().name());
             stmt.executeUpdate();
 
@@ -61,15 +92,72 @@ public class UserDao implements CrudOperation<User> {
 
     @Override
     public void update(User user) {
+        String hashedPassword = PasswordEncoder.encode(user.getPassword());
+
     String sql = "UPDATE \"User\" SET name = ?, password = ? WHERE id = ?";
         try (Connection connection = dataSource.getConnection();
              PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setString(1, user.getName());
-            stmt.setString(2, user.getPassword());
+            stmt.setString(2, hashedPassword);
             stmt.setInt(3, user.getId());
             stmt.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    public boolean updatePartial(User user) {
+        // 1. Vérifier que l'utilisateur existe
+        Optional<User> existingUser = getById(user.getId());
+        if (existingUser.isEmpty()) {
+            return false;
+        }
+
+        // 2. Préparer la requête dynamiquement
+        List<String> updates = new ArrayList<>();
+        List<Object> params = new ArrayList<>();
+
+        if (user.getName() != null) {
+            updates.add("name = ?");
+            params.add(user.getName());
+        }
+
+        if (user.getEmail() != null) {
+            updates.add("email = ?");
+            params.add(user.getEmail());
+        }
+
+        if (user.getPassword() != null && !user.getPassword().equals(existingUser.get().getPassword())) {
+            updates.add("password = ?");
+            params.add(PasswordEncoder.encode(user.getPassword()));
+        }
+
+        if (user.getUserType() != null) {
+            updates.add("user_type = ?::user_type_enum");
+            params.add(user.getUserType().name());
+        }
+
+        // 3. Si rien à mettre à jour
+        if (updates.isEmpty()) {
+            return false;
+        }
+
+        // 4. Construire la requête
+        String sql = "UPDATE \"User\" SET " + String.join(", ", updates) + " WHERE id = ?";
+        params.add(user.getId());
+
+        // 5. Exécuter
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement stmt = connection.prepareStatement(sql)) {
+
+            for (int i = 0; i < params.size(); i++) {
+                stmt.setObject(i + 1, params.get(i));
+            }
+
+            return stmt.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Échec de la mise à jour partielle de l'utilisateur ID: " + user.getId(), e);
         }
     }
 
@@ -93,7 +181,7 @@ public class UserDao implements CrudOperation<User> {
     public List<User> getAll(int page, int size) {
         List<User> users = new ArrayList<>();
     String sql =
-        "SELECT id, name, email, registration_date, user_type FROM \"User\" LIMIT ? OFFSET ?";
+        "SELECT id, name, email, registration_date, password, user_type FROM \"User\" LIMIT ? OFFSET ?";
         try (Connection connection = dataSource.getConnection();
              PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, size);
@@ -118,7 +206,7 @@ public class UserDao implements CrudOperation<User> {
     public List<User> filter(List<Criteria> criterias) {
         List<User> users = new ArrayList<>();
         String sql =
-                "SELECT id, name, email, registration_date, user_type FROM \"User\" WHERE 1=1";
+                "SELECT id, name, email, registration_date, password, user_type FROM \"User\" WHERE 1=1";
 
         for (Criteria criteria : criterias) {
             if ("name".equals(criteria.getColumn())) {
@@ -158,7 +246,7 @@ public class UserDao implements CrudOperation<User> {
     @Override
     public Optional<User> getById(int id) {
     String sql =
-        "SELECT id, name, email, registration_date, user_type FROM \"User\" WHERE id = ?";
+        "SELECT id, name, email, registration_date, password, user_type FROM \"User\" WHERE id = ?";
         try (Connection connection = dataSource.getConnection();
              PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, id);
@@ -172,6 +260,35 @@ public class UserDao implements CrudOperation<User> {
                         rs.getTimestamp("registration_date").toLocalDateTime(),
                         UserType.valueOf(rs.getString("user_type"))
                 ));
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return Optional.empty();
+    }
+
+    public Optional<User> authenticate(String email, String password) {
+        String sql = "SELECT id, name, email, password, registration_date, user_type " +
+                     "FROM \"User\" WHERE email = ?";
+
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement stmt = connection.prepareStatement(sql)) {
+
+            stmt.setString(1, email);
+
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                String storedHash = rs.getString("password");
+                if (PasswordEncoder.verify(password, storedHash)) {
+                    return Optional.of(new User(
+                            rs.getInt("id"),
+                            rs.getString("name"),
+                            rs.getString("email"),
+                            storedHash,
+                            rs.getTimestamp("registration_date").toLocalDateTime(),
+                            UserType.valueOf(rs.getString("user_type"))
+                    ));
+                }
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);

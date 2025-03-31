@@ -37,4 +37,8 @@ public class UserService {
     public void deleteUserById(int id) {
         userDao.deleteById(id);
     }
+
+    public Optional<User> login(String email, String password) {
+        return userDao.authenticate(email, password);
+    }
 }

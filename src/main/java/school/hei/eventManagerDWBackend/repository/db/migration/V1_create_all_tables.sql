@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS "User"
     email             VARCHAR(255) UNIQUE             NOT NULL,
     password          TEXT                            NOT NULL,
     registration_date TIMESTAMP      DEFAULT NOW(),
-    user_type         user_type_enum DEFAULT 'client' NOT NULL
+    user_type         user_type_enum NOT NULL
 );
 
 

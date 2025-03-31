@@ -57,12 +57,15 @@ public class Main {
 //    organizerDao.create(new Organizer(12, "name", "1email@email", "pass", LocalDateTime.now(), UserType.organizer,"company"));
 ClientDao clientDao = new ClientDao();
     System.out.println(clientDao.getById(1));
-clientDao.create(new Client(1,"name", "fsfd@mail.com", "password", LocalDateTime.now(),UserType.client));
+//clientDao.create(new Client(1,"name", "fsfd@mail.com", "password", LocalDateTime.now(),UserType.client));
 //clientDao.update(new Client(1, "client", "test@email.com", "test", LocalDateTime.now(), UserType.admin));
 
   UserDao userDao = new UserDao();
     System.out.println(userDao.getById(33));
     System.out.println(userDao.getAll(0, 5));
-//    userDao.create(new User(33, "Google", "test45@email.com", "test12", LocalDateTime.now(), UserType.admin));
+    System.out.println(
+        userDao.updatePartial(
+            new User(
+                1, "Bob Smith", "update@email.com", "test12", LocalDateTime.now(), UserType.admin)));
   }
 }

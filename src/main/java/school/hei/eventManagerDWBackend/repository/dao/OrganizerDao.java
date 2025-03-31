@@ -4,6 +4,7 @@ import org.springframework.stereotype.Repository;
 import school.hei.eventManagerDWBackend.entity.Organizer;
 import school.hei.eventManagerDWBackend.entity.UserType;
 import school.hei.eventManagerDWBackend.repository.db.DataSource;
+import school.hei.eventManagerDWBackend.utils.PasswordEncoder;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -16,6 +17,8 @@ public class OrganizerDao implements CrudOperation<Organizer> {
   private final DataSource dataSource = new DataSource();
   @Override
   public void create(Organizer organizer) {
+    String hashedPassword = PasswordEncoder.encode(organizer.getPassword());
+
     String insertUserSql = "INSERT INTO \"User\" (name, email, password, user_type) VALUES (?, ?, ?, ?::user_type_enum) RETURNING id";
     String insertOrganizerSql = "INSERT INTO organizer (user_id, company) VALUES (?, ?)";
 
@@ -25,7 +28,7 @@ public class OrganizerDao implements CrudOperation<Organizer> {
       try (PreparedStatement psUser = conn.prepareStatement(insertUserSql)) {
         psUser.setString(1, organizer.getName());
         psUser.setString(2, organizer.getEmail());
-        psUser.setString(3, organizer.getPassword());
+        psUser.setString(3, hashedPassword);
         psUser.setString(4, organizer.getUserType().name()); // Ajout du user_type
         ResultSet rs = psUser.executeQuery();
         if (rs.next()) {

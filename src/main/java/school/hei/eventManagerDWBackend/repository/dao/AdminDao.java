@@ -4,6 +4,7 @@ import org.springframework.stereotype.Repository;
 import school.hei.eventManagerDWBackend.entity.Admin;
 import school.hei.eventManagerDWBackend.entity.UserType;
 import school.hei.eventManagerDWBackend.repository.db.DataSource;
+import school.hei.eventManagerDWBackend.utils.PasswordEncoder;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -19,6 +20,8 @@ public class AdminDao implements CrudOperation<Admin> {
 
   @Override
   public void create(Admin admin) {
+    String hashedPassword = PasswordEncoder.encode(admin.getPassword());
+
     String insertUserSql = "INSERT INTO \"User\" (name, email, password, user_type) VALUES (?, ?, ?, ?::user_type_enum) RETURNING id";
     String insertAdminSql = "INSERT INTO Admin (user_id, admin_name) VALUES (?, ?)";
 
@@ -28,7 +31,7 @@ public class AdminDao implements CrudOperation<Admin> {
       try (PreparedStatement psUser = conn.prepareStatement(insertUserSql)) {
         psUser.setString(1, admin.getName());
         psUser.setString(2, admin.getEmail());
-        psUser.setString(3, admin.getPassword());
+        psUser.setString(3, hashedPassword);
         psUser.setString(4, admin.getUserType().name()); // Ajout de l'`user_type`
 
         ResultSet rs = psUser.executeQuery();
