@@ -54,6 +54,46 @@ public class OrganizerDao implements CrudOperation<Organizer> {
     }
   }
 
+  public Organizer save(Organizer organizer) {
+    // 1. D'abord créer l'User
+    String insertUserSql = "INSERT INTO \"User\" (name, email, password, user_type) VALUES (?, ?, ?, ?::user_type_enum) RETURNING id";
+    String insertOrganizerSql = "INSERT INTO Organizer (user_id, company) VALUES (?, ?) RETURNING *";
+
+    try (Connection conn = dataSource.getConnection()) {
+      conn.setAutoCommit(false);
+
+      // Insertion User
+      try (PreparedStatement psUser = conn.prepareStatement(insertUserSql)) {
+        psUser.setString(1, organizer.getName());
+        psUser.setString(2, organizer.getEmail());
+        psUser.setString(3, organizer.getPassword());
+        psUser.setString(4, organizer.getUserType().name());
+
+        ResultSet rs = psUser.executeQuery();
+        if (rs.next()) {
+          int userId = rs.getInt("id");
+          organizer.setId(userId);
+
+          // Insertion Organizer
+          try (PreparedStatement psOrganizer = conn.prepareStatement(insertOrganizerSql)) {
+            psOrganizer.setInt(1, userId);
+            psOrganizer.setString(2, organizer.getCompany());
+
+            ResultSet rsOrg = psOrganizer.executeQuery();
+            if (rsOrg.next()) {
+              organizer.setCompany(rsOrg.getString("company"));
+              conn.commit();
+              return organizer;
+            }
+          }
+        }
+      }
+    } catch (SQLException e) {
+      throw new RuntimeException("Erreur création organizer", e);
+    }
+    throw new RuntimeException("Échec création organizer");
+  }
+
   @Override
   public void update(Organizer organizer) {
     String updateUserSql = "UPDATE \"User\" SET name = ?, password = ? WHERE id = ? AND user_type = 'organizer'";

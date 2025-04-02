@@ -34,6 +34,39 @@ public class ClientDao implements CrudOperation<Client> {
       throw new RuntimeException(e);
     }
   }
+
+  public Client save(Client client) {
+    String userSql = "INSERT INTO \"User\" (name, email, password, user_type) VALUES (?, ?, ?, ?::user_type_enum) RETURNING id";
+    String clientSql = "INSERT INTO Client (user_id) VALUES (?)";
+
+    try (Connection conn = dataSource.getConnection()) {
+      conn.setAutoCommit(false);
+
+      try (PreparedStatement psUser = conn.prepareStatement(userSql)) {
+        psUser.setString(1, client.getName());
+        psUser.setString(2, client.getEmail());
+        psUser.setString(3, client.getPassword());
+        psUser.setString(4, client.getUserType().name());
+
+        ResultSet rs = psUser.executeQuery();
+        if (rs.next()) {
+          int userId = rs.getInt(1);
+
+          try (PreparedStatement psClient = conn.prepareStatement(clientSql)) {
+            psClient.setInt(1, userId);
+            psClient.executeUpdate();
+          }
+
+          conn.commit();
+          client.setId(userId);
+          return client;
+        }
+      }
+    } catch (SQLException e) {
+      throw new RuntimeException("Erreur création client", e);
+    }
+    throw new RuntimeException("Échec création client");
+  }
   @Override
   public void update(Client client) {
     String sql =

@@ -77,6 +77,41 @@ public class AdminDao implements CrudOperation<Admin> {
     }
   }
 
+    public Admin save(Admin admin) {
+      String userSql = "INSERT INTO \"User\" (name, email, password, user_type) VALUES (?, ?, ?, ?::user_type_enum) RETURNING id";
+      String adminSql = "INSERT INTO Admin (user_id, admin_name) VALUES (?, ?)";
+
+      try (Connection conn = dataSource.getConnection()) {
+        conn.setAutoCommit(false);
+
+        try (PreparedStatement psUser = conn.prepareStatement(userSql)) {
+          psUser.setString(1, admin.getName());
+          psUser.setString(2, admin.getEmail());
+          psUser.setString(3, admin.getPassword());
+          psUser.setString(4, admin.getUserType().name());
+
+          ResultSet rs = psUser.executeQuery();
+          if (rs.next()) {
+            int userId = rs.getInt(1);
+
+            try (PreparedStatement psAdmin = conn.prepareStatement(adminSql)) {
+              psAdmin.setInt(1, userId);
+              psAdmin.setString(2, admin.getName());
+              psAdmin.executeUpdate();
+            }
+
+            conn.commit();
+            admin.setId(userId);
+            return admin;
+          }
+        }
+      } catch (SQLException e) {
+        throw new RuntimeException("Erreur création admin", e);
+      }
+      throw new RuntimeException("Échec création admin");
+    }
+
+
   public void deleteById(int id) {
     String sql = "DELETE FROM admin WHERE id = ?";
     try (Connection connection = dataSource.getConnection();
