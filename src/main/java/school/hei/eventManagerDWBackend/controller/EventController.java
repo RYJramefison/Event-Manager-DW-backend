@@ -3,6 +3,7 @@ package school.hei.eventManagerDWBackend.controller;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import school.hei.eventManagerDWBackend.entity.Event;
 import school.hei.eventManagerDWBackend.entity.StatusEvent;
 import school.hei.eventManagerDWBackend.repository.dao.Criteria;
@@ -69,10 +70,19 @@ public class EventController {
     return event.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
   }
 
-  @PostMapping
-  public ResponseEntity<Void> createEvent(@RequestBody Event event) {
-    eventService.createEvent(event);
+  @PutMapping("/image/{id}")
+  public ResponseEntity<Void> uploadImage(@PathVariable final int id, @RequestBody final MultipartFile file) {
+    eventService.upload(id, file);
     return ResponseEntity.ok().build();
+  }
+
+  @PostMapping
+  public ResponseEntity<Event> createEvent(
+          @RequestPart("event") Event event,
+          @RequestPart(value = "image", required = false) MultipartFile imageFile) {
+
+    Event createdEvent = eventService.createEvent(event, imageFile);
+    return ResponseEntity.ok(createdEvent);
   }
 
   @PutMapping("/{id}")
