@@ -18,8 +18,9 @@ public class Event {
     private LocalDateTime dateEvent;
     private String location;
     private StatusEvent status;
+    private String imageUrl;
 
-    public Event(int id, Organizer organizer, String title, String description, LocalDateTime dateEvent, String location, StatusEvent status) {
+    public Event(int id, Organizer organizer, String title, String description, LocalDateTime dateEvent, String location, StatusEvent status, String imageUrl) {
         this.id = id;
         this.organizer = organizer;
         this.title = title;
@@ -27,6 +28,7 @@ public class Event {
         this.dateEvent = dateEvent;
         this.location = location;
         this.status = status;
+        this.imageUrl = imageUrl;
     }
     public Event() {}
 }
