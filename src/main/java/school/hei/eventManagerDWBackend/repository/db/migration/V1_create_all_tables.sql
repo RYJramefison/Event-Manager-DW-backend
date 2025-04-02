@@ -51,7 +51,8 @@ CREATE TABLE if not exists Event
     description  TEXT,
     event_date   TIMESTAMP    NOT NULL,
     location     VARCHAR(255) NOT NULL,
-    status       VARCHAR(50) CHECK (status IN ('DRAFT', 'PUBLISHED', 'CANCELED')) DEFAULT 'DRAFT'
+    status       VARCHAR(50) CHECK (status IN ('DRAFT', 'PUBLISHED', 'CANCELED')) DEFAULT 'DRAFT',
+    image_url    VARCHAR(500)
 );
 
 

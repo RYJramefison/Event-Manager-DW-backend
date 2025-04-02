@@ -14,7 +14,8 @@ import org.springframework.context.annotation.ComponentScan;
   "school.hei.eventManagerDWBackend.repository.dao",
   "school.hei.eventManagerDWBackend.service",
   "school.hei.eventManagerDWBackend.config",
-  "school.hei.eventManagerDWBackend.utils"
+        "school.hei.eventManagerDWBackend.utils",
+        "school.hei.eventManagerDWBackend.cloudinary"
 })
 public class EventManagerDwBackendApplication {
 
