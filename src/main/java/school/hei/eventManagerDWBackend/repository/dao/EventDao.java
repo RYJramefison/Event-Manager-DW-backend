@@ -58,6 +58,20 @@ public class EventDao implements CrudOperation<Event> {
     }
   }
 
+  public Integer getLastInsertedId() {
+    String sql = "SELECT MAX(id) AS last_id FROM event";
+    try (Connection connection = dataSource.getConnection();
+         PreparedStatement stmt = connection.prepareStatement(sql);
+         ResultSet rs = stmt.executeQuery()) {
+      if (rs.next()) {
+        return rs.getInt("last_id");
+      }
+      return 0;
+    } catch (SQLException e) {
+      throw new RuntimeException("Failed to get last inserted ID", e);
+    }
+  }
+
   public Event createEventWithImage(Event event, MultipartFile imageFile) {
     event.setImageUrl(null);
     create(event);
