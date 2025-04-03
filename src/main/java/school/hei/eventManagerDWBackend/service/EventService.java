@@ -30,6 +30,10 @@ public class EventService {
     return eventDao.filter(criterias);
   }
 
+  public Integer getLastInsertId(){
+    return eventDao.getLastInsertedId();
+  }
+
   public Optional<Event> findEventById(int id) {
     return eventDao.getById(id);
   }

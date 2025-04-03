@@ -70,6 +70,12 @@ public class EventController {
     return event.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
   }
 
+  @GetMapping("/size")
+  public ResponseEntity<Integer> getLastInsertId() {
+    return ResponseEntity.ok(eventService.getLastInsertId()) ;
+
+  }
+
   @PutMapping("/image/{id}")
   public ResponseEntity<Void> uploadImage(@PathVariable final int id, @RequestBody final MultipartFile file) {
     eventService.upload(id, file);
