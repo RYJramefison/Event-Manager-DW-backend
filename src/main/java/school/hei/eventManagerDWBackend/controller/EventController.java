@@ -97,4 +97,9 @@ public class EventController {
     eventService.deleteEventById(id);
     return ResponseEntity.ok().build();
   }
+
+  @GetMapping("/last6")
+  public List<Event> getLast6Events() {
+    return eventService.getLast6Events();
+  }
 }

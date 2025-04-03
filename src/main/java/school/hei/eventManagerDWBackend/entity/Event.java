@@ -6,6 +6,10 @@ import lombok.Setter;
 import lombok.ToString;
 
 import java.time.LocalDateTime;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Getter
 @Setter
 @ToString
@@ -31,5 +35,16 @@ public class Event {
         this.imageUrl = imageUrl;
     }
     public Event() {}
+
+    public static List<Event> getLast6Events(List<Event> events) {
+        if (events == null || events.isEmpty()) {
+            return List.of();
+        }
+
+        return events.stream()
+                .sorted(Comparator.comparing(Event::getDateEvent).reversed())
+                .limit(6)
+                .collect(Collectors.toList());
+    }
 }
 
