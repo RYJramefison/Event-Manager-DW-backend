@@ -1,0 +1,27 @@
+services:
+  - type: web
+    name: event-manager-springboot
+    runtime: java  # Spécifie explicitement Java
+    buildCommand: mvn clean package
+    startCommand: java -jar target/*.jar
+    env: java
+    envVars:
+      - key: PORT
+        value: 8080
+      # Config DB (si vous utilisez PostgreSQL sur Render) :
+      - key: SPRING_DATASOURCE_URL
+        valueFrom:
+          databaseLink:
+            name: eventmanager_db
+            property: connectionString
+      - key: SPRING_DATASOURCE_USERNAME
+        valueFrom:
+          databaseLink:
+            name: eventmanager_db
+            property: user
+      - key: SPRING_DATASOURCE_PASSWORD
+        valueFrom:
+          databaseLink:
+            name: eventmanager_db
+            property: password
+    healthCheckPath: /actuator/health  # Spring Boot Actuator
