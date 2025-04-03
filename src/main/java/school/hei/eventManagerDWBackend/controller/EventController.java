@@ -6,10 +6,14 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import school.hei.eventManagerDWBackend.entity.Event;
 import school.hei.eventManagerDWBackend.entity.StatusEvent;
+import school.hei.eventManagerDWBackend.entity.TicketType;
 import school.hei.eventManagerDWBackend.repository.dao.Criteria;
 import school.hei.eventManagerDWBackend.service.EventService;
+import school.hei.eventManagerDWBackend.service.TicketService;
+import school.hei.eventManagerDWBackend.service.TicketTypeService;
 
 
+import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +24,7 @@ import java.util.Optional;
 @RequestMapping("/api/event")
 public class EventController {
   private final EventService eventService;
+  private final TicketTypeService ticketTypeService;
 
   @GetMapping
   public ResponseEntity<List<Event>> getAllEvents(
@@ -101,5 +106,10 @@ public class EventController {
   @GetMapping("/last6")
   public List<Event> getLast6Events() {
     return eventService.getLast6Events();
+  }
+
+  @GetMapping("/{eventId}/available")
+  public List<TicketType> getAvailableTicketsForEvent(@PathVariable int eventId) throws SQLException {
+    return ticketTypeService.getAvailableTicketTypesForEvent(eventId);
   }
 }
