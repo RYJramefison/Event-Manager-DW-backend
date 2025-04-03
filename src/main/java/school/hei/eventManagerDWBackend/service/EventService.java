@@ -11,8 +11,10 @@ import school.hei.eventManagerDWBackend.entity.Event;
 import school.hei.eventManagerDWBackend.repository.dao.Criteria;
 import school.hei.eventManagerDWBackend.repository.dao.EventDao;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @AllArgsConstructor
 @Service
@@ -83,5 +85,14 @@ public class EventService {
     event.setImageUrl(response.getUrl());
     this.eventDao.update(event);
     return event;
+  }
+
+  // Ajoutez cette méthode dans EventService
+  public List<Event> getLast6Events() {
+    // Implémentation avec EventDao (à adapter selon votre implémentation de EventDao)
+    return eventDao.getAll(0, Integer.MAX_VALUE).stream()
+            .sorted(Comparator.comparing(Event::getDateEvent).reversed())
+            .limit(6)
+            .collect(Collectors.toList());
   }
 }
