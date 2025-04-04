@@ -3,17 +3,17 @@ package school.hei.eventManagerDWBackend.repository.dao;
 import org.springframework.stereotype.Repository;
 import school.hei.eventManagerDWBackend.entity.Reservation;
 import school.hei.eventManagerDWBackend.entity.StatusReservation;
+import school.hei.eventManagerDWBackend.entity.Ticket;
 import school.hei.eventManagerDWBackend.repository.db.DataSource;
 
 import java.sql.*;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 @Repository
 public class ReservationDao implements CrudOperation<Reservation> {
-
+  private final TicketDao ticketDao = new TicketDao();
   private final DataSource dataSource = new DataSource();
 
   @Override
@@ -25,10 +25,14 @@ public class ReservationDao implements CrudOperation<Reservation> {
             connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
       stmt.setInt(1, reservation.getClientId());
       stmt.setInt(2, reservation.getEventId());
+
+      reservation.getTicketList().forEach( ticket -> { ticketDao.create(ticket); }
+      );
+
       stmt.setTimestamp(3, Timestamp.valueOf(reservation.getReservationDate()));
       stmt.setString(4, reservation.getStatusReservation().name());
       stmt.executeUpdate();
-
+      
       // Récupérer l'ID généré après insertion
       ResultSet rs = stmt.getGeneratedKeys();
       if (rs.next()) {
@@ -83,11 +87,14 @@ public class ReservationDao implements CrudOperation<Reservation> {
       stmt.setInt(2, page * size);
       ResultSet rs = stmt.executeQuery();
       while (rs.next()) {
+        List<Ticket> tickets = ticketDao.getByReservation(rs.getInt("event_id"));
         reservations.add(
             new Reservation(
                 rs.getInt("id"),
                 rs.getInt("client_id"),
-                rs.getInt("event_id"),
+                    rs.getInt("event_id"),
+                    // ticketList
+                    tickets,
                 rs.getTimestamp("reservation_date").toLocalDateTime(),
                 StatusReservation.valueOf(rs.getString("status"))));
       }
@@ -130,6 +137,8 @@ public class ReservationDao implements CrudOperation<Reservation> {
                         rs.getInt("id"),
                         rs.getInt("client_id"),
                         rs.getInt("event_id"),
+                        ticketDao.getByReservation(rs.getInt("event_id")),
+
                         rs.getTimestamp("reservation_date").toLocalDateTime(),
                         StatusReservation.valueOf(rs.getString("status"))));
       }
@@ -153,6 +162,8 @@ public class ReservationDao implements CrudOperation<Reservation> {
                 rs.getInt("id"),
                 rs.getInt("client_id"),
                 rs.getInt("event_id"),
+                    ticketDao.getByReservation(rs.getInt("event_id")),
+
                 rs.getTimestamp("reservation_date").toLocalDateTime(),
                 StatusReservation.valueOf(rs.getString("status"))));
       }
