@@ -56,7 +56,7 @@ public class OrganizerDao implements CrudOperation<Organizer> {
 
   public Organizer save(Organizer organizer) {
     // 1. D'abord créer l'User
-    String insertUserSql = "INSERT INTO \"User\" (name, email, password, user_type) VALUES (?, ?, ?, ?::user_type_enum) RETURNING id";
+    String insertUserSql = "INSERT INTO \"User\" (name, email, password, user_type, registration_date) VALUES (?, ?, ?, ?::user_type_enum,NOW()) RETURNING id";
     String insertOrganizerSql = "INSERT INTO Organizer (user_id, company) VALUES (?, ?) RETURNING *";
 
     try (Connection conn = dataSource.getConnection()) {

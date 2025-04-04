@@ -118,4 +118,15 @@ public class EventController {
   public List<TicketType> getAvailableTicketsForEvent(@PathVariable int eventId) throws SQLException {
     return ticketTypeService.getAvailableTicketTypesForEvent(eventId);
   }
+
+  @GetMapping("organizer/{organizerId}")
+  public ResponseEntity<List<Event>> getEventsByOrganizer(@PathVariable int organizerId) {
+    List<Event> events = eventService.getEventsByOrganizerId(organizerId);
+
+    if (events.isEmpty()) {
+      return ResponseEntity.noContent().build();
+    }
+
+    return ResponseEntity.ok(events);
+  }
 }

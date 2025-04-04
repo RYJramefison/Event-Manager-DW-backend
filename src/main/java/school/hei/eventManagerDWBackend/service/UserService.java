@@ -1,6 +1,8 @@
 package school.hei.eventManagerDWBackend.service;
 
 import lombok.AllArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import school.hei.eventManagerDWBackend.entity.User;
 import school.hei.eventManagerDWBackend.repository.dao.Criteria;
@@ -40,5 +42,12 @@ public class UserService {
 
     public Optional<User> login(String email, String password) {
         return userDao.authenticate(email, password);
+    }
+
+    public User getCurrentUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+        return userDao.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
     }
 }

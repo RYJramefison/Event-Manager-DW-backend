@@ -81,4 +81,9 @@ public class UserController {
         userService.deleteUserById(id);
         return ResponseEntity.ok().build();
     }
+
+    @GetMapping("/me")
+    public User getCurrentUser() {
+        return userService.getCurrentUser();
+    }
 }

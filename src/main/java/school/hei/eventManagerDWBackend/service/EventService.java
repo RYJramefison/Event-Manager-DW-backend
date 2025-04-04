@@ -95,4 +95,8 @@ public class EventService {
             .limit(6)
             .collect(Collectors.toList());
   }
+
+  public List<Event> getEventsByOrganizerId(int organizerId) {
+    return eventDao.findByOrganizerId(organizerId);
+  }
 }
