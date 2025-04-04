@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: Event-Manager-DW-backend
+    runtime: java
+    buildCommand: mvn clean package
+    startCommand: java -jar target/*.jar
+    envVars:
+      - key: PORT
+        value: 8080
+      # Ajoutez d'autres variables si nécessaire
+    healthCheckPath: /actuator/health
+      - key: jdbc:postgresql://${DATABASE_HOST}:5432/${DATABASE_NAME}
+        valueFrom:
+          databaseLink:
+            name: ${DATABASE_NAME}
+            property: connectionString
