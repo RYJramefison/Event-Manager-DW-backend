@@ -9,9 +9,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class FileUploadUtil {
-    public  static final long MAX_FILE_SIZE = 2 * 1024 * 1024;
+    public  static final long MAX_FILE_SIZE = 8 * 1024 * 1024;
 
-    public static final String IMAGE_PATTERN = "([^\\s]+(\\.(?i)(jpg||png||gif||bmp))$)";
+    public static final String IMAGE_PATTERN = ".*";
 
     public static final String DATE_FORMAT = "yyyyMMddHHmmss";
 
@@ -25,7 +25,7 @@ public class FileUploadUtil {
     public static void assertAllowed(MultipartFile file, String pattern){
         final long size = file.getSize();
         if (size > MAX_FILE_SIZE){
-            throw new RuntimeException("Max file size is 2MB");
+            throw new RuntimeException("Max file size is 8MB");
         }
         final String fileName = file.getOriginalFilename();
         final String extension = FilenameUtils.getExtension(fileName);
