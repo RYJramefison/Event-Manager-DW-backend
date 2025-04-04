@@ -96,6 +96,14 @@ public class EventService {
             .collect(Collectors.toList());
   }
 
+  public List<Event> getLas9Events() {
+    // Implémentation avec EventDao (à adapter selon votre implémentation de EventDao)
+    return eventDao.getAll(0, Integer.MAX_VALUE).stream()
+            .sorted(Comparator.comparing(Event::getDateEvent).reversed())
+            .limit(9)
+            .collect(Collectors.toList());
+  }
+
   public List<Event> getEventsByOrganizerId(int organizerId) {
     return eventDao.findByOrganizerId(organizerId);
   }
