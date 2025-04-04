@@ -108,6 +108,11 @@ public class EventController {
     return eventService.getLast6Events();
   }
 
+  @GetMapping("/last9")
+  public List<Event> getLast10Events() {
+    return eventService.getLas9Events();
+  }
+
   @GetMapping("/{eventId}/available")
   public List<TicketType> getAvailableTicketsForEvent(@PathVariable int eventId) throws SQLException {
     return ticketTypeService.getAvailableTicketTypesForEvent(eventId);
