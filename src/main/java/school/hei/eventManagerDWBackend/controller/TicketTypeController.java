@@ -30,6 +30,12 @@ public class TicketTypeController {
         return ticket.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
+    @GetMapping("/event/{id}")
+    public ResponseEntity<List<TicketType>> getByEventId(@PathVariable int id) throws Exception {
+        List<TicketType> ticket = ticketTypeService.findByEventId(id);
+        return ResponseEntity.ok().body( ticket);
+    }
+
     @PostMapping
     public ResponseEntity<Void> createTicket(@RequestBody TicketType ticket) throws Exception  {
         ticketTypeService.save(ticket);

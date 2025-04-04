@@ -28,6 +28,11 @@ public class TicketTypeService {
         return ticketTypeDao.findById(id);
     }
 
+    public List<TicketType> findByEventId(int id)throws Exception{
+        return ticketTypeDao.findByEventId(id);
+    }
+
+
     public List<TicketType> getAvailableTicketTypesForEvent(int eventId) throws SQLException {
         return ticketTypeDao.findByEventId(eventId).stream()
                 .filter(TicketType::isAvailable)
