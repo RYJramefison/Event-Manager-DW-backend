@@ -83,6 +83,14 @@ public class EventService {
     return event;
   }
 
+  public List<Event> getLast3Events() {
+    // Implémentation avec EventDao (à adapter selon votre implémentation de EventDao)
+    return eventDao.getAll(0, Integer.MAX_VALUE).stream()
+            .sorted(Comparator.comparing(Event::getDateEvent).reversed())
+            .limit(3)
+            .collect(Collectors.toList());
+  }
+
   // Ajoutez cette méthode dans EventService
   public List<Event> getLast6Events() {
     // Implémentation avec EventDao (à adapter selon votre implémentation de EventDao)

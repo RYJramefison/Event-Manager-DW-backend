@@ -35,16 +35,5 @@ public class Event {
         this.imageUrl = imageUrl;
     }
     public Event() {}
-
-    public static List<Event> getLast6Events(List<Event> events) {
-        if (events == null || events.isEmpty()) {
-            return List.of();
-        }
-
-        return events.stream()
-                .sorted(Comparator.comparing(Event::getDateEvent).reversed())
-                .limit(6)
-                .collect(Collectors.toList());
-    }
 }
 

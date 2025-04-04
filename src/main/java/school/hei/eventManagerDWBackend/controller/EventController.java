@@ -103,6 +103,11 @@ public class EventController {
     return ResponseEntity.ok().build();
   }
 
+  @GetMapping("/last3")
+  public List<Event> getLast3Events() {
+    return eventService.getLast3Events();
+  }
+
   @GetMapping("/last6")
   public List<Event> getLast6Events() {
     return eventService.getLast6Events();
