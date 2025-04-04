@@ -87,9 +87,11 @@ CREATE TABLE if not exists Reservation
 CREATE TABLE if not exists Ticket
 (
     id             SERIAL PRIMARY KEY,
+    ticket_code    VARCHAR(20) UNIQUE NOT NULL,
     reservation_id INT                NOT NULL REFERENCES Reservation (id) ON DELETE CASCADE,
-    ticket_type_id INT                NOT NULL REFERENCES TicketType (id) ON DELETE CASCADE,
-    ticket_code    VARCHAR(20) UNIQUE NOT NULL
+    ticket_quantity INT                ,
+    ticket_type_id INT                NOT NULL REFERENCES TicketType (id) ON DELETE CASCADE
+
 );
 
 -- ===========================

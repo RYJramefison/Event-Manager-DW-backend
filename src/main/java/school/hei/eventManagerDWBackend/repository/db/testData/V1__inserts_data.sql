@@ -63,10 +63,10 @@ INSERT INTO Reservation (client_id, event_id, reservation_date, status) VALUES
 -- 8. Insert Statements for the "Ticket" Table
 -- ===========================
 
-INSERT INTO Ticket (reservation_id, ticket_type_id, ticket_code) VALUES
-(1, 1, 'TICKET001'),
-(2, 3, 'TICKET002'),
-(3, 2, 'TICKET003');
+INSERT INTO Ticket (ticket_code,reservation_id,ticket_quantity, ticket_type_id ) VALUES
+('TICKET001',1, 3 , 1 ),
+('TICKET002',2, 4 , 2),
+('TICKET003', 3, 2 , 3);
 
 -- ===========================
 -- 9. Insert Statements for the "Payment" Table

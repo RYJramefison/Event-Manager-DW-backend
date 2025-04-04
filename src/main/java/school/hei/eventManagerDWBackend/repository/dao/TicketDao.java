@@ -16,12 +16,13 @@ public class TicketDao implements CrudOperation<Ticket> {
 
     @Override
     public void create(Ticket ticket) {
-        String sql = "INSERT INTO ticket (ticket_code, reservation_id, ticket_type_id) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO ticket (ticket_code, reservation_id, ticket_quantity, ticket_type_id) VALUES (?, ?, ?, ?)";
         try (Connection connection = dataSource.getConnection();
              PreparedStatement stmt = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             stmt.setString(1, ticket.getTicketCode());
             stmt.setInt(2, ticket.getReservationId());
-            stmt.setInt(3, ticket.getTicketTypeId());
+            stmt.setInt(3, ticket.getTicketQuantity());
+            stmt.setInt(4, ticket.getTicketTypeId());
             stmt.executeUpdate();
 
             ResultSet rs = stmt.getGeneratedKeys();
@@ -35,13 +36,14 @@ public class TicketDao implements CrudOperation<Ticket> {
 
     @Override
     public void update(Ticket ticket) {
-        String sql = "UPDATE ticket SET ticket_code = ?, reservation_id = ?, ticket_type_id = ? WHERE id = ?";
+        String sql = "UPDATE ticket SET ticket_code = ?, reservation_id = ?, ticket_quantity = ?, ticket_type_id = ? WHERE id = ?";
         try (Connection connection = dataSource.getConnection();
              PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setString(1, ticket.getTicketCode());
             stmt.setInt(2, ticket.getReservationId());
-            stmt.setInt(3, ticket.getTicketTypeId());
-            stmt.setInt(4, ticket.getId());
+            stmt.setInt(3, ticket.getTicketQuantity());
+            stmt.setInt(4, ticket.getTicketTypeId());
+            stmt.setInt(5, ticket.getId());
             stmt.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -64,10 +66,32 @@ public class TicketDao implements CrudOperation<Ticket> {
         }
     }
 
+    public List<Ticket> getByReservation(int id){
+        List<Ticket> tickets = new ArrayList<>();
+        String sql = "SELECT id, ticket_code, reservation_id, ticket_quantity, ticket_type_id FROM ticket where reservation_id=?";
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, id);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                tickets.add(new Ticket(
+                        rs.getInt("id"),
+                        rs.getString("ticket_code"),
+                        rs.getInt("reservation_id"),
+                        rs.getInt("ticket_quantity"),
+                        rs.getInt("ticket_type_id")
+                ));
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return tickets;
+    }
+
     @Override
     public List<Ticket> getAll(int page, int size) {
         List<Ticket> tickets = new ArrayList<>();
-        String sql = "SELECT id, ticket_code, reservation_id, ticket_type_id FROM ticket LIMIT ? OFFSET ?";
+        String sql = "SELECT id, ticket_code, reservation_id, ticket_quantity, ticket_type_id FROM ticket LIMIT ? OFFSET ?";
         try (Connection connection = dataSource.getConnection();
              PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, size);
@@ -78,6 +102,7 @@ public class TicketDao implements CrudOperation<Ticket> {
                         rs.getInt("id"),
                         rs.getString("ticket_code"),
                         rs.getInt("reservation_id"),
+                        rs.getInt("ticket_quantity"),
                         rs.getInt("ticket_type_id")
                 ));
             }
@@ -89,7 +114,7 @@ public class TicketDao implements CrudOperation<Ticket> {
 
     public List<Ticket> filter(List<Criteria> criterias) {
         List<Ticket> tickets = new ArrayList<>();
-        String sql = "SELECT id, ticket_code, reservation_id, ticket_type_id FROM ticket WHERE 1=1";
+        String sql = "SELECT id, ticket_code, reservation_id,ticket_quantity, ticket_type_id FROM ticket WHERE 1=1";
 
         for (Criteria criteria : criterias) {
             if ("ticketCode".equals(criteria.getColumn())){
@@ -111,6 +136,7 @@ public class TicketDao implements CrudOperation<Ticket> {
                         rs.getInt("id"),
                         rs.getString("ticket_code"),
                         rs.getInt("reservation_id"),
+                        rs.getInt("ticket_quantity"),
                         rs.getInt("ticket_type_id")
                 ));
             }
@@ -122,7 +148,7 @@ public class TicketDao implements CrudOperation<Ticket> {
 
     @Override
     public Optional<Ticket> getById(int id) {
-        String sql = "SELECT id, ticket_code, reservation_id, ticket_type_id FROM ticket WHERE id = ?";
+        String sql = "SELECT id, ticket_code, reservation_id,ticket_quantity, ticket_type_id FROM ticket WHERE id = ?";
         try (Connection connection = dataSource.getConnection();
              PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, id);
@@ -132,6 +158,7 @@ public class TicketDao implements CrudOperation<Ticket> {
                         rs.getInt("id"),
                         rs.getString("ticket_code"),
                         rs.getInt("reservation_id"),
+                        rs.getInt("ticket_quantity"),
                         rs.getInt("ticket_type_id")
                 ));
             }
