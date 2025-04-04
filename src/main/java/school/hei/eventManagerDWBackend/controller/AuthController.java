@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import school.hei.eventManagerDWBackend.config.JwtTokenProvider;
 import school.hei.eventManagerDWBackend.entity.*;
+
 import school.hei.eventManagerDWBackend.service.AuthService;
 import school.hei.eventManagerDWBackend.service.OrganizerService;
 import school.hei.eventManagerDWBackend.utils.PasswordEncoder;
@@ -19,32 +20,32 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
-  private final AuthService authService;
-  private OrganizerService organizerService;
-  private final JwtTokenProvider jwtTokenProvider;
+    private final AuthService authService;
+    private final JwtTokenProvider jwtTokenProvider;
+    private OrganizerService organizerService;
 
-  public AuthController(AuthService authService, JwtTokenProvider jwtTokenProvider) {
-    this.authService = authService;
-    this.jwtTokenProvider = jwtTokenProvider;
-  }
-
-  @PostMapping("/login")
-  public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
-    Optional<User> user = authService.login(loginRequest.getEmail(), loginRequest.getPassword());
-
-    if (user.isPresent()) {
-      String token =
-          jwtTokenProvider.generateToken(user.get().getEmail(), user.get().getUserType().name());
-
-      Map<String, Object> response = new HashMap<>();
-      response.put("token", token);
-      response.put("user", user.get());
-
-      return ResponseEntity.ok(response);
-    } else {
-      return ResponseEntity.status(401).body("Email ou mot de passe incorrect");
+    public AuthController(AuthService authService, JwtTokenProvider jwtTokenProvider) {
+        this.authService = authService;
+        this.jwtTokenProvider = jwtTokenProvider;
     }
-  }
+
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
+        Optional<User> user = authService.login(loginRequest.getEmail(), loginRequest.getPassword());
+
+        if (user.isPresent()) {
+            String token =
+                    jwtTokenProvider.generateToken(user.get().getEmail(), user.get().getUserType().name());
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("token", token);
+            response.put("user", user.get());
+
+            return ResponseEntity.ok(response);
+        } else {
+            return ResponseEntity.status(401).body("Email ou mot de passe incorrect");
+        }
+    }
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@Valid @RequestBody RegisterRequest registerRequest) {
@@ -85,6 +86,7 @@ public class AuthController {
                 default:
                     return ResponseEntity.badRequest().body("Type d'utilisateur invalide");
             }
+
 
             String token = jwtTokenProvider.generateToken(
                     createdUser.getEmail(),

@@ -22,7 +22,31 @@ public class AuthService {
 
 
     public Optional<User> login(String email, String password) {
-        return userDao.authenticate(email, password);
+        try {
+            // 1. Normalisation de l'email
+            String normalizedEmail = email.toLowerCase().trim();
+            System.out.println("[DEBUG] Email normalisé: " + normalizedEmail);
+
+            // 2. Récupération utilisateur
+            Optional<User> userOpt = userDao.findByEmail(normalizedEmail);
+            if (userOpt.isEmpty()) {
+                System.out.println("[DEBUG] Utilisateur non trouvé");
+                return Optional.empty();
+            }
+
+            User user = userOpt.get();
+            System.out.println("[DEBUG] Hash stocké: " + user.getPassword());
+
+            // 3. Vérification du mot de passe
+            boolean passwordMatches = PasswordEncoder.verify(password, user.getPassword());
+            System.out.println("[DEBUG] Résultat vérification: " + passwordMatches);
+
+            return passwordMatches ? userOpt : Optional.empty();
+        } catch (Exception e) {
+            System.err.println("[ERREUR] Échec authentification: " + e.getMessage());
+            e.printStackTrace();
+            return Optional.empty();
+        }
     }
 
     public boolean emailExists(String email) {
@@ -32,17 +56,17 @@ public class AuthService {
 
 
     public Admin registerAdmin(Admin admin) {
-        admin.setPassword(passwordEncoder.encode(admin.getPassword()));
+        admin.setPassword(admin.getPassword());
         return adminDao.save(admin);
     }
 
     public Organizer registerOrganizer(Organizer organizer) {
-        organizer.setPassword(passwordEncoder.encode(organizer.getPassword()));
+        organizer.setPassword(organizer.getPassword());
         return organizerDao.save(organizer);
     }
 
     public Client registerClient(Client client) {
-        client.setPassword(passwordEncoder.encode(client.getPassword()));
+        client.setPassword(client.getPassword());
         return clientDao.save(client);
     }
 

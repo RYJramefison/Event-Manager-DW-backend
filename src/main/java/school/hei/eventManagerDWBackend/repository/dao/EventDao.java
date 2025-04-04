@@ -278,4 +278,50 @@ public class EventDao implements CrudOperation<Event> {
     return Optional.empty();
   }
 
+  public List<Event> findByOrganizerId(int organizerId) {
+    List<Event> events = new ArrayList<>();
+    String sql = """
+        SELECT e.id AS event_id, o.id AS organizer_id, o.company, e.title, e.description, 
+               e.event_date, e.location, e.status, u.id AS user_id, u.name, u.email, u.password, 
+               u.registration_date, u.user_type, e.image_url 
+        FROM event e 
+        INNER JOIN organizer o ON e.organizer_id = o.id 
+        INNER JOIN "User" u ON o.user_id = u.id 
+        WHERE o.id = ?""";
+
+    try (Connection connection = dataSource.getConnection();
+         PreparedStatement stmt = connection.prepareStatement(sql)) {
+      stmt.setInt(1, organizerId);
+
+      try (ResultSet rs = stmt.executeQuery()) {
+        while (rs.next()) {
+          Organizer organizer = new Organizer(
+                  rs.getInt("organizer_id"),
+                  rs.getString("name"),
+                  rs.getString("email"),
+                  rs.getString("password"),
+                  rs.getTimestamp("registration_date").toLocalDateTime(),
+                  UserType.valueOf(rs.getString("user_type")),
+                  rs.getString("company")
+          );
+
+          Event event = new Event(
+                  rs.getInt("event_id"),
+                  organizer,
+                  rs.getString("title"),
+                  rs.getString("description"),
+                  rs.getTimestamp("event_date").toLocalDateTime(),
+                  rs.getString("location"),
+                  StatusEvent.valueOf(rs.getString("status")),
+                  rs.getString("image_url")
+          );
+          events.add(event);
+        }
+      }
+    } catch (SQLException e) {
+      throw new RuntimeException("Error finding events by organizer ID", e);
+    }
+    return events;
+  }
+
 }
