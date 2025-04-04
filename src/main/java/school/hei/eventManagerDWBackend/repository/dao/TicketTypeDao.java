@@ -1,11 +1,13 @@
 package school.hei.eventManagerDWBackend.repository.dao;
 
 import org.springframework.stereotype.Repository;
-import school.hei.eventManagerDWBackend.entity.Ticket;
 import school.hei.eventManagerDWBackend.entity.TicketType;
 import school.hei.eventManagerDWBackend.repository.db.DataSource;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -14,16 +16,16 @@ import java.util.Optional;
 public class TicketTypeDao {
   private final DataSource dataSource = new DataSource();
 
-  public void createTicketType(int eventId, String name, double price, int availableQuantity)
+  public void createTicketType(TicketType ticket)
       throws SQLException {
     String sql =
         "INSERT INTO TicketType (event_id, name, price, available_quantity) VALUES (?, ?, ?, ?)";
     try (Connection connection = dataSource.getConnection();
         PreparedStatement stmt = connection.prepareStatement(sql)) {
-      stmt.setInt(1, eventId);
-      stmt.setString(2, name);
-      stmt.setDouble(3, price);
-      stmt.setInt(4, availableQuantity);
+      stmt.setInt(1, ticket.getEventId());
+      stmt.setString(2, ticket.getName());
+      stmt.setDouble(3, ticket.getPrice());
+      stmt.setInt(4, ticket.getAvailable_quantity());
       stmt.executeUpdate();
     }
   }
