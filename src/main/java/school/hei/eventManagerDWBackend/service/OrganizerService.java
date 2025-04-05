@@ -1,8 +1,12 @@
 package school.hei.eventManagerDWBackend.service;
 
 import lombok.AllArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import school.hei.eventManagerDWBackend.entity.Organizer;
+import school.hei.eventManagerDWBackend.entity.User;
 import school.hei.eventManagerDWBackend.repository.dao.Criteria;
 import school.hei.eventManagerDWBackend.repository.dao.OrganizerDao;
 
@@ -37,4 +41,11 @@ public class OrganizerService {
   public void createOrganizer(Organizer client) {
     organizerDao.create(client);
   }
+
+    public Organizer getCurrentOrganizer() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+        return organizerDao.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Organizer not found"));
+    }
 }

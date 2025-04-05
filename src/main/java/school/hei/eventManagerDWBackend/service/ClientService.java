@@ -1,8 +1,11 @@
 package school.hei.eventManagerDWBackend.service;
 
 import lombok.AllArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import school.hei.eventManagerDWBackend.entity.Admin;
+import school.hei.eventManagerDWBackend.entity.Client;
 import school.hei.eventManagerDWBackend.entity.Client;
 import school.hei.eventManagerDWBackend.repository.dao.ClientDao;
 
@@ -36,5 +39,12 @@ public class ClientService {
 
   public void createClient(Client client) {
     clientDao.create(client);
+  }
+
+  public Client getCurrentClient() {
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    String email = authentication.getName();
+    return clientDao.findByEmail(email)
+            .orElseThrow(() -> new RuntimeException("Client not found"));
   }
 }

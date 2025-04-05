@@ -2,8 +2,11 @@ package school.hei.eventManagerDWBackend.controller;
 
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import school.hei.eventManagerDWBackend.entity.Organizer;
+import school.hei.eventManagerDWBackend.entity.User;
 import school.hei.eventManagerDWBackend.repository.dao.Criteria;
 import school.hei.eventManagerDWBackend.service.OrganizerService;
 
@@ -16,12 +19,12 @@ import java.util.Optional;
 @RequestMapping("/api/organizer")
 @CrossOrigin(origins = "http://localhost:3000")
 public class OrganizerController {
-    private final OrganizerService adminService;
+    private final OrganizerService organizerService;
 
     @GetMapping
     public ResponseEntity<List<Organizer>> getAllOrganizers(@RequestParam(defaultValue = "0") int page,
                                                       @RequestParam(defaultValue = "10") int size) {
-        return ResponseEntity.ok(adminService.findAllOrganizers(page, size));
+        return ResponseEntity.ok(organizerService.findAllOrganizers(page, size));
     }
 
     @GetMapping("/filter")
@@ -35,31 +38,39 @@ public class OrganizerController {
         if (company != null){
             criteria.add(new Criteria("company", company));
         }
-        return ResponseEntity.ok(adminService.filterOrganizer(criteria));
+        return ResponseEntity.ok(organizerService.filterOrganizer(criteria));
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Organizer> getOrganizerById(@PathVariable int id) {
-        Optional<Organizer> admin = adminService.findOrganizerById(id);
-        return admin.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+        Optional<Organizer> organizer = organizerService.findOrganizerById(id);
+        return organizer.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PostMapping
-    public ResponseEntity<Void> createOrganizer(@RequestBody Organizer admin) {
-        adminService.createOrganizer(admin);
+    public ResponseEntity<Void> createOrganizer(@RequestBody Organizer organizer) {
+        organizerService.createOrganizer(organizer);
         return ResponseEntity.ok().build();
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Void> updateOrganizer(@PathVariable int id, @RequestBody Organizer admin) {
-        admin.setId(id);
-        adminService.updateOrganizer(admin);
+    public ResponseEntity<Void> updateOrganizer(@PathVariable int id, @RequestBody Organizer organizer) {
+        organizer.setId(id);
+        organizerService.updateOrganizer(organizer);
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteOrganizer(@PathVariable int id) {
-        adminService.deleteOrganizerById(id);
+        organizerService.deleteOrganizerById(id);
         return ResponseEntity.ok().build();
     }
+
+    @GetMapping("/me")
+    public Organizer getCurrentOrganizer() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        System.out.println("Current auth email: " + auth.getName()); // Vérifiez dans les logs
+        return organizerService.getCurrentOrganizer();
+    }
+
 }

@@ -50,4 +50,6 @@ public class UserService {
         return userDao.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
     }
+
+
 }

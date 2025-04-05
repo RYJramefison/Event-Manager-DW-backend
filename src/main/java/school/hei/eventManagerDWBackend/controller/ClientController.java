@@ -2,9 +2,12 @@ package school.hei.eventManagerDWBackend.controller;
 
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import school.hei.eventManagerDWBackend.entity.Admin;
 import school.hei.eventManagerDWBackend.entity.Client;
+import school.hei.eventManagerDWBackend.entity.User;
 import school.hei.eventManagerDWBackend.service.ClientService;
 
 import java.util.List;
@@ -51,5 +54,12 @@ public class ClientController {
     public ResponseEntity<Void> deleteClient(@PathVariable int id) {
         clientService.deleteClientById(id);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/me")
+    public Client getCurrentClient() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        System.out.println("Current auth email: " + auth.getName()); // Vérifiez dans les logs
+        return clientService.getCurrentClient();
     }
 }

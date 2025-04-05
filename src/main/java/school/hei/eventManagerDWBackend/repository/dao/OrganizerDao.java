@@ -2,6 +2,7 @@ package school.hei.eventManagerDWBackend.repository.dao;
 
 import org.springframework.stereotype.Repository;
 import school.hei.eventManagerDWBackend.entity.Organizer;
+import school.hei.eventManagerDWBackend.entity.User;
 import school.hei.eventManagerDWBackend.entity.UserType;
 import school.hei.eventManagerDWBackend.repository.db.DataSource;
 import school.hei.eventManagerDWBackend.utils.PasswordEncoder;
@@ -15,11 +16,13 @@ import java.util.Optional;
 public class OrganizerDao implements CrudOperation<Organizer> {
 
   private final DataSource dataSource = new DataSource();
+
   @Override
   public void create(Organizer organizer) {
     String hashedPassword = PasswordEncoder.encode(organizer.getPassword());
 
-    String insertUserSql = "INSERT INTO \"User\" (name, email, password, user_type) VALUES (?, ?, ?, ?::user_type_enum) RETURNING id";
+    String insertUserSql =
+        "INSERT INTO \"User\" (name, email, password, user_type) VALUES (?, ?, ?, ?::user_type_enum) RETURNING id";
     String insertOrganizerSql = "INSERT INTO organizer (user_id, company) VALUES (?, ?)";
 
     try (Connection conn = dataSource.getConnection()) {
@@ -54,10 +57,44 @@ public class OrganizerDao implements CrudOperation<Organizer> {
     }
   }
 
+  public Optional<Organizer> findByEmail(String email) {
+            String sql = """
+        SELECT o.id, u.name, u.email, u.password, 
+               u.user_type, u.registration_date, o.company
+        FROM organizer o
+        INNER JOIN "User" u ON u.id = o.user_id
+        WHERE u.email = ?
+        """;;
+
+    try (Connection connection = dataSource.getConnection();
+        PreparedStatement stmt = connection.prepareStatement(sql)) {
+
+      stmt.setString(1, email);
+      ResultSet rs = stmt.executeQuery();
+
+      if (rs.next()) {
+        return Optional.of(
+            new Organizer(
+                rs.getInt("id"),
+                rs.getString("name"),
+                rs.getString("email"),
+                rs.getString("password"),
+                rs.getTimestamp("registration_date").toLocalDateTime(),
+                UserType.valueOf(rs.getString("user_type")),
+                rs.getString("company")));
+      }
+    } catch (SQLException e) {
+      throw new RuntimeException(e);
+    }
+    return Optional.empty();
+  }
+
   public Organizer save(Organizer organizer) {
     // 1. D'abord créer l'User
-    String insertUserSql = "INSERT INTO \"User\" (name, email, password, user_type, registration_date) VALUES (?, ?, ?, ?::user_type_enum,NOW()) RETURNING id";
-    String insertOrganizerSql = "INSERT INTO Organizer (user_id, company) VALUES (?, ?) RETURNING *";
+    String insertUserSql =
+        "INSERT INTO \"User\" (name, email, password, user_type, registration_date) VALUES (?, ?, ?, ?::user_type_enum,NOW()) RETURNING id";
+    String insertOrganizerSql =
+        "INSERT INTO Organizer (user_id, company) VALUES (?, ?) RETURNING *";
 
     try (Connection conn = dataSource.getConnection()) {
       conn.setAutoCommit(false);
@@ -96,14 +133,15 @@ public class OrganizerDao implements CrudOperation<Organizer> {
 
   @Override
   public void update(Organizer organizer) {
-    String updateUserSql = "UPDATE \"User\" SET name = ?, password = ? WHERE id = ? AND user_type = 'organizer'";
+    String updateUserSql =
+        "UPDATE \"User\" SET name = ?, password = ? WHERE id = ? AND user_type = 'organizer'";
     String updateOrganizerSql = "UPDATE Organizer SET company = ? WHERE user_id = ?";
 
     try (Connection connection = dataSource.getConnection()) {
       connection.setAutoCommit(false);
 
       try (PreparedStatement userStmt = connection.prepareStatement(updateUserSql);
-           PreparedStatement organizerStmt = connection.prepareStatement(updateOrganizerSql)) {
+          PreparedStatement organizerStmt = connection.prepareStatement(updateOrganizerSql)) {
 
         // Mise à jour de "User"
         userStmt.setString(1, organizer.getName());
@@ -126,11 +164,10 @@ public class OrganizerDao implements CrudOperation<Organizer> {
     }
   }
 
-
   public void deleteById(int id) {
     String sql = "DELETE FROM Organizer WHERE id = ?";
     try (Connection connection = dataSource.getConnection();
-         PreparedStatement stmt = connection.prepareStatement(sql)) {
+        PreparedStatement stmt = connection.prepareStatement(sql)) {
       stmt.setInt(1, id);
       int rowsAffected = stmt.executeUpdate();
       if (rowsAffected > 0) {
@@ -146,8 +183,7 @@ public class OrganizerDao implements CrudOperation<Organizer> {
   @Override
   public List<Organizer> getAll(int page, int size) {
     List<Organizer> organizers = new ArrayList<>();
-    String sql =
-        "SELECT * FROM organizer_user_view WHERE user_type = 'organizer' LIMIT ? OFFSET ?";
+    String sql = "SELECT * FROM organizer_user_view WHERE user_type = 'organizer' LIMIT ? OFFSET ?";
     try (Connection connection = dataSource.getConnection();
         PreparedStatement stmt = connection.prepareStatement(sql)) {
       stmt.setInt(1, size);
@@ -162,8 +198,7 @@ public class OrganizerDao implements CrudOperation<Organizer> {
                 rs.getString("password"),
                 rs.getTimestamp("registration_date").toLocalDateTime(),
                 UserType.valueOf(rs.getString("user_type")),
-                rs.getString("company")
-        ));
+                rs.getString("company")));
       }
     } catch (SQLException e) {
       throw new RuntimeException(e);
@@ -176,26 +211,25 @@ public class OrganizerDao implements CrudOperation<Organizer> {
     String sql = "SELECT * FROM organizer_user_view WHERE user_type = 'organizer' AND 1=1";
 
     for (Criteria criteria : criterias) {
-      if ("name".equals(criteria.getColumn())){
+      if ("name".equals(criteria.getColumn())) {
         sql += " AND organizer_name ILIKE '%" + criteria.getValue() + "%'";
-      }
-      else if ("company".equals(criteria.getColumn())){
+      } else if ("company".equals(criteria.getColumn())) {
         sql += " AND company ILIKE '%" + criteria.getValue() + "%'";
       }
     }
     try (Connection connection = dataSource.getConnection();
-         Statement stmt = connection.createStatement()) {
+        Statement stmt = connection.createStatement()) {
       ResultSet rs = stmt.executeQuery(sql);
       while (rs.next()) {
         organizers.add(
-                new Organizer(
-                        rs.getInt("organizer_id"),
-                        rs.getString("organizer_name"),
-                        rs.getString("email"),
-                        rs.getString("password"),
-                        rs.getTimestamp("registration_date").toLocalDateTime(),
-                        UserType.valueOf(rs.getString("user_type")),
-                        rs.getString("company")));
+            new Organizer(
+                rs.getInt("organizer_id"),
+                rs.getString("organizer_name"),
+                rs.getString("email"),
+                rs.getString("password"),
+                rs.getTimestamp("registration_date").toLocalDateTime(),
+                UserType.valueOf(rs.getString("user_type")),
+                rs.getString("company")));
       }
     } catch (SQLException e) {
       throw new RuntimeException(e);

@@ -2,6 +2,7 @@ package school.hei.eventManagerDWBackend.repository.dao;
 
 import org.springframework.stereotype.Repository;
 import school.hei.eventManagerDWBackend.entity.Client;
+import school.hei.eventManagerDWBackend.entity.Organizer;
 import school.hei.eventManagerDWBackend.entity.UserType;
 import school.hei.eventManagerDWBackend.repository.db.DataSource;
 
@@ -33,6 +34,38 @@ public class ClientDao implements CrudOperation<Client> {
     } catch (SQLException e) {
       throw new RuntimeException(e);
     }
+  }
+
+  public Optional<Client> findByEmail(String email) {
+    String sql = """
+        SELECT o.id, u.name, u.email, u.password, 
+               u.user_type, u.registration_date
+        FROM client o
+        INNER JOIN "User" u ON u.id = o.user_id
+        WHERE u.email = ?
+        """;;
+
+    try (Connection connection = dataSource.getConnection();
+         PreparedStatement stmt = connection.prepareStatement(sql)) {
+
+      stmt.setString(1, email);
+      ResultSet rs = stmt.executeQuery();
+
+      if (rs.next()) {
+        return Optional.of(
+                new Client(
+                        rs.getInt("id"),
+                        rs.getString("name"),
+                        rs.getString("email"),
+                        rs.getString("password"),
+                        rs.getTimestamp("registration_date").toLocalDateTime(),
+                        UserType.valueOf(rs.getString("user_type")
+                        )));
+      }
+    } catch (SQLException e) {
+      throw new RuntimeException(e);
+    }
+    return Optional.empty();
   }
 
   public Client save(Client client) {
