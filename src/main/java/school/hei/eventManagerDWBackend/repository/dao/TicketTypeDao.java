@@ -45,7 +45,7 @@ public class TicketTypeDao {
   }
 
   public Optional<TicketType> findById(int id) {
-    String sql = "SELECT id, ticket_code, reservation_id, ticket_type_id FROM ticket WHERE id = ?";
+    String sql = "SELECT id, event_id, name, price, available_quantity FROM tickettype WHERE id = ?";
     try (Connection connection = dataSource.getConnection();
         PreparedStatement stmt = connection.prepareStatement(sql)) {
       stmt.setInt(1, id);
